@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* 성능 최적화 */
+* {
+  /* GPU 가속 활성화 */
+  transform: translateZ(0);
+  /* 스크롤 성능 향상 */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 애니메이션 최적화 */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-shimmer {
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+}
+
+/* 접근성: 애니메이션 비활성화 사용자를 위한 대체 */
+@media (prefers-reduced-motion: reduce) {
+  .animate-shimmer,
+  .animate-fade-in,
+  .animate-pulse {
+    animation: none;
+  }
+}
