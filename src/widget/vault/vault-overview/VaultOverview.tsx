@@ -72,7 +72,9 @@ export const VaultOverview = () => {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-gray-400 text-sm">Total Supply</span>
-          <span className="text-white font-semibold">{totalSupply}</span>
+          <span className="text-white font-semibold" suppressHydrationWarning>
+            {totalSupply}
+          </span>
         </div>
       </div>
 
@@ -90,14 +92,22 @@ export const VaultOverview = () => {
             <span className="text-gray-400 text-sm">My Total Supply</span>
             <span className="text-gray-500 text-xs">ⓘ</span>
           </div>
-          <div className="text-3xl font-bold text-white">{myTotalSupply}</div>
+          <div
+            className="text-3xl font-bold text-white"
+            suppressHydrationWarning>
+            {myTotalSupply}
+          </div>
         </div>
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-gray-400 text-sm">My Total APY</span>
             <span className="text-gray-500 text-xs">ⓘ</span>
           </div>
-          <div className="text-3xl font-bold text-white">{myTotalAPY}</div>
+          <div
+            className="text-3xl font-bold text-white"
+            suppressHydrationWarning>
+            {myTotalAPY}
+          </div>
         </div>
       </div>
     </div>

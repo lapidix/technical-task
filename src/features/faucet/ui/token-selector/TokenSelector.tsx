@@ -1,6 +1,6 @@
 import { SUPPORTED_VAULTS } from "@/entities/vault/constants";
 import { VaultBase } from "@/entities/vault/types/vault.types";
-import { TokenIcon } from "@web3icons/react";
+import { NetworkIcon } from "@/shared/ui/icons/network";
 
 interface TokenSelectorProps {
   selectedToken: VaultBase;
@@ -27,7 +27,7 @@ export const TokenSelector = ({
                 : "border-gray-700 bg-gray-800 hover:border-gray-600"
             }`}>
             <div className="mb-2 flex justify-center">
-              <TokenIcon symbol={vault.id} variant="branded" size={32} />
+              <NetworkIcon icon={vault.icon} />
             </div>
             <div className="text-white font-semibold">{vault.symbol}</div>
           </button>

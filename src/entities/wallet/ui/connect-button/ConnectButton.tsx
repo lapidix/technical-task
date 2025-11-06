@@ -1,5 +1,5 @@
 import { tcm } from "@/shared/libs";
-import { ConnectIcon } from "@/shared/ui/icons";
+import { ConnectIcon } from "@/shared/ui/icons/common";
 import { HTMLAttributes } from "react";
 
 export const ConnectButton: React.FC<HTMLAttributes<HTMLButtonElement>> = ({

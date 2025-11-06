@@ -2,7 +2,7 @@
 
 import { SUPPORTED_WALLETS } from "@/entities/wallet/constants";
 import { DisconnectButton, WalletListItem } from "@/entities/wallet/ui";
-import { CloseIcon } from "@/shared/ui/icons";
+import { CloseIcon } from "@/shared/ui/icons/common";
 import { Modal } from "@/shared/ui/modal";
 import { useAccount } from "wagmi";
 import { useWalletConnection, useWalletModalState } from "../../hooks";

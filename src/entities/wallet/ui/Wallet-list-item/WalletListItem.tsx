@@ -1,5 +1,5 @@
 import { tcm } from "@/shared/libs";
-import { WalletIcon } from "@web3icons/react";
+import { WalletIcon } from "@/shared/ui/icons/wallet";
 import { HTMLAttributes } from "react";
 import { SupportWalletType } from "../../types";
 
@@ -26,7 +26,7 @@ export const WalletListItem: React.FC<WalletListItemProps> = ({
       )}
       {...props}>
       <div className="flex items-center gap-3">
-        <WalletIcon id={wallet.id} variant="branded" size={32} />
+        <WalletIcon icon={wallet.icon} />
         <span className="font-semibold text-gray-900">{wallet.name}</span>
       </div>
       {!isInstalled && <span className="text-sm text-gray-500">Install</span>}

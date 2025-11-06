@@ -1,3 +1,5 @@
+import { NetworkIconType } from "@/shared/ui/icons/network";
+
 export type VaultBase = {
   id: string;
   name: string;
@@ -6,6 +8,7 @@ export type VaultBase = {
   vaultAddress: `0x${string}`;
   decimals: number;
   coinGeckoId: string;
+  icon: NetworkIconType;
 };
 
 export type VaultEntity = VaultBase & {

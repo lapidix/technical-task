@@ -1,5 +1,5 @@
 import { VaultEntity } from "@/entities/vault/types";
-import { TokenIcon } from "@web3icons/react";
+import { NetworkIcon } from "@/shared/ui/icons/network";
 
 interface VaultListItemProps {
   vault: VaultEntity;
@@ -11,14 +11,14 @@ export const VaultListItem = ({ vault }: VaultListItemProps) => {
       <div className="flex items-center gap-4">
         {/* Vault 아이콘 */}
         <div className="w-14 h-14 flex items-center justify-center">
-          <TokenIcon symbol={vault.id} variant="branded" size={56} />
+          <NetworkIcon icon={vault.icon} />
         </div>
         <div>
           <h3 className="text-xl font-semibold text-white">
             {vault.symbol}{" "}
             <span className="font-normal text-gray-400">Vault</span>
           </h3>
-          <p className="text-gray-400 text-base">
+          <p className="text-gray-400 text-base" suppressHydrationWarning>
             $
             {(vault.totalAssets * vault.price).toLocaleString(undefined, {
               minimumFractionDigits: 2,

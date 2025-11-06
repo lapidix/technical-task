@@ -1,5 +1,3 @@
-"use client";
-
 import { Header } from "@/widget/header";
 import { VaultList, VaultListSkeleton } from "@/widget/vault/vault-list";
 import {
