@@ -1,1 +1,1 @@
-export { ERC20_ABI } from "./abis.const";
+export { ERC20_ABI, VAULT_ABI } from "./abis.const";

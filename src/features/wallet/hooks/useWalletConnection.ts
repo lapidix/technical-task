@@ -1,4 +1,4 @@
-import { SupportWalletType } from "@/entities/wallet";
+import { SupportWalletType } from "@/entities/wallet/types";
 import { useConnect } from "wagmi";
 
 export const useWalletConnection = (onSuccess?: () => void) => {

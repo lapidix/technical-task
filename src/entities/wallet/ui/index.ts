@@ -1,4 +1,4 @@
-export { ConnectButton } from "./ConnectButton";
-export { ConnectedWalletButton } from "./ConnectedWalletButton";
-export { DisconnectButton } from "./DisconnectButton";
-export { WalletListItem } from "./WalletListItem";
+export { ConnectButton } from "./connect-button";
+export { ConnectedWalletButton } from "./connected-wallet-button";
+export { DisconnectButton } from "./disconnect-button";
+export { WalletListItem } from "./Wallet-list-item";

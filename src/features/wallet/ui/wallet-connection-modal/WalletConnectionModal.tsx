@@ -1,21 +1,21 @@
 "use client";
 
-import {
-  DisconnectButton,
-  SUPPORTED_WALLETS,
-  WalletListItem,
-} from "@/entities/wallet";
+import { SUPPORTED_WALLETS } from "@/entities/wallet/constants";
+import { DisconnectButton, WalletListItem } from "@/entities/wallet/ui";
 import { CloseIcon } from "@/shared/ui/icons";
 import { Modal } from "@/shared/ui/modal";
 import { useAccount } from "wagmi";
-import { useWalletConnection, useWalletModalState } from "../hooks";
+import { useWalletConnection, useWalletModalState } from "../../hooks";
 
-interface WalletModalProps {
+interface WalletConnectionModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function WalletModal({ isOpen, onClose }: WalletModalProps) {
+export function WalletConnectionModal({
+  isOpen,
+  onClose,
+}: WalletConnectionModalProps) {
   const { connectWallet, isPending, connectors } = useWalletConnection(onClose);
   const { isConnected } = useAccount();
   const { shouldRender } = useWalletModalState(isOpen, onClose, isPending);

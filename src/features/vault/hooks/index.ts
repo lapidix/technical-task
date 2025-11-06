@@ -1,0 +1,1 @@
+export { useVaultData } from "./useVaultData";

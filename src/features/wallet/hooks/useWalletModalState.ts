@@ -16,14 +16,12 @@ export function useWalletModalState(
     setMounted(true);
   }, []);
 
-  // 연결 중일 때 상태 추적
   useEffect(() => {
     if (isPending) {
       setWasConnecting(true);
     }
   }, [isPending]);
 
-  // 연결이 완료되면 모달 닫기 (연결 중이었을 때만)
   useEffect(() => {
     if (isConnected && wasConnecting && !isPending) {
       setWasConnecting(false);

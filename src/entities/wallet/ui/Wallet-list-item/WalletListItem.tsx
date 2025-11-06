@@ -1,7 +1,7 @@
 import { tcm } from "@/shared/libs";
 import { WalletIcon } from "@web3icons/react";
 import { HTMLAttributes } from "react";
-import { SupportWalletType } from "../types";
+import { SupportWalletType } from "../../types";
 
 interface WalletListItemProps extends HTMLAttributes<HTMLButtonElement> {
   wallet: SupportWalletType;
