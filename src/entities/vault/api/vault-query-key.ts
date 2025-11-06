@@ -1,7 +1,7 @@
 export const VAULT_QUERY_KEYS = {
   tokenPrices: ["token-prices"],
-  vaultAPR: ["vaultAPR"],
+  vaultAPR: ["vault-apr"],
   vaultBalance: (address?: string) =>
-    ["vaultBalance", address || "disconnected"] as const,
-  vaultTotalAssets: ["vaultTotalAssets"],
+    ["vault-balance", address || "disconnected"] as const,
+  vaultTotalAssets: ["vault-total-assets"],
 } as const;
