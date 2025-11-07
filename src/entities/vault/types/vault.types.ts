@@ -1,7 +1,7 @@
 import { NetworkIconType } from "@/shared/ui/icons/network";
 
 export type VaultBase = {
-  id: string;
+  id: SupportedVaultId;
   name: string;
   symbol: string;
   tokenAddress: `0x${string}`;
@@ -17,3 +17,5 @@ export type VaultEntity = VaultBase & {
   myBalance: number;
   totalAssets: number;
 };
+
+export type SupportedVaultId = "usdt" | "btc" | "usdc";

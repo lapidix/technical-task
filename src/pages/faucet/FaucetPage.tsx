@@ -1,10 +1,14 @@
 "use client";
 
-import { UnsupportedNetwork } from "@/features/faucet/ui/unsupported-network";
-import { WalletNotConnected } from "@/features/faucet/ui/wallet-not-connected";
 import { useWalletConnection } from "@/shared/hooks";
-import { FaucetRequestForm } from "@/widget/faucet/faucet-request-form";
-import { FaucetRequestFormSkeleton } from "@/widget/faucet/faucet-request-form/FaucetRequestFormSkeleton";
+import {
+  FaucetRequestForm,
+  FaucetRequestFormSkeleton,
+} from "@/widget/faucet/faucet-request-form";
+import {
+  UnsupportedNetwork,
+  WalletNotConnected,
+} from "@/widget/faucet/faucet-request-form/components";
 import { Header } from "@/widget/header";
 import { Suspense } from "react";
 import { useAccount } from "wagmi";

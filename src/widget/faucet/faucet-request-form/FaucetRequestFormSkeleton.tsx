@@ -5,7 +5,7 @@ import {
   BalanceDisplaySkeleton,
   TokenInformationSkeleton,
   TokenSelectorSkeleton,
-} from "@/features/faucet/ui";
+} from "./components";
 export const FaucetRequestFormSkeleton = () => {
   return (
     <div className="bg-gray-900 rounded-xl p-6 space-y-6">

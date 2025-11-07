@@ -1,22 +1,23 @@
 "use client";
 
 import { SUPPORTED_VAULTS } from "@/entities/vault/constants";
-import { useFaucet, useTokenBalance } from "@/features/faucet/hooks";
+import { useFaucet, useTokenBalance } from "@/features/erc20/hooks";
+import { useState } from "react";
 import {
   AmountInput,
   BalanceDisplay,
   TokenInformation,
   TokenSelector,
-} from "@/features/faucet/ui";
-import { TransactionStatus } from "@/features/faucet/ui/transaction-status";
-import { useState } from "react";
+  TransactionStatus,
+} from "./components";
 
 export const FaucetRequestForm = () => {
   const [selectedToken, setSelectedToken] = useState(SUPPORTED_VAULTS[0]);
   const [amount, setAmount] = useState("100");
 
   const { balance, refetchBalance } = useTokenBalance(
-    selectedToken.tokenAddress
+    selectedToken.tokenAddress,
+    selectedToken.decimals
   );
 
   const { requestTokens, isPending, isConfirming, isSuccess, hash } = useFaucet(

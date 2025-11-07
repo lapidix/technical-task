@@ -1,0 +1,1 @@
+export { VaultHeader } from "./VaultHeader";

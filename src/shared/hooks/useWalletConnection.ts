@@ -13,7 +13,7 @@ export function useWalletConnection() {
     !mounted || status === "connecting" || status === "reconnecting";
 
   return {
-    address,
+    address, //! 타입이 `0x${string}`로 추론되지 않으므로 개선 필요
     status,
     isConnected,
     isLoading,

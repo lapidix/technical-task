@@ -1,9 +1,6 @@
 import { Header } from "@/widget/header";
 import { VaultList, VaultListSkeleton } from "@/widget/vault/vault-list";
-import {
-  VaultOverview,
-  VaultOverviewSkeleton,
-} from "@/widget/vault/vault-overview";
+import { VaultOverview } from "@/widget/vault/vault-overview";
 import { Suspense } from "react";
 
 export const MainPage = () => {
@@ -11,11 +8,9 @@ export const MainPage = () => {
     <div className="min-h-screen bg-black">
       <Header />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header Section */}
+        {/* Overview Section */}
         <div className="mb-8 animate-fade-in">
-          <Suspense fallback={<VaultOverviewSkeleton />}>
-            <VaultOverview />
-          </Suspense>
+          <VaultOverview />
         </div>
         {/* Vault List Section */}
         <div className="space-y-4">
