@@ -1,29 +1,32 @@
 import { Header } from "@/widget/header";
+import { BottomNavigation } from "@/widget/navigation/bottom-navigation";
 import { VaultList, VaultListSkeleton } from "@/widget/vault/vault-list";
 import { VaultOverview } from "@/widget/vault/vault-overview";
 import { Suspense } from "react";
 
 export const MainPage = () => {
   return (
-    <div className="min-h-screen bg-black">
-      <Header />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-black flex flex-col">
+      <main className="max-w-7xl mx-auto  flex-1 flex flex-col w-full px-6">
+        <Header />
         {/* Overview Section */}
-        <div className="mb-8 animate-fade-in">
+        <div className="my-8 animate-fade-in">
           <VaultOverview />
         </div>
         {/* Vault List Section */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-white">Vault</h2>
-            <h3 className="text-xl font-semibold text-gray-400">APY</h3>
+        <div className="flex-1 flex flex-col space-y-4">
+          <div className="flex items-center mb-8">
+            <h2 className="text-2xl font-semibold text-white">All Vaults</h2>
           </div>
 
-          <Suspense fallback={<VaultListSkeleton />}>
-            <VaultList />
-          </Suspense>
+          <div className="flex-1">
+            <Suspense fallback={<VaultListSkeleton />}>
+              <VaultList />
+            </Suspense>
+          </div>
         </div>
       </main>
+      <BottomNavigation />
     </div>
   );
 };

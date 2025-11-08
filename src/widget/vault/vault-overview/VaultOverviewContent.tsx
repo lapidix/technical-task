@@ -14,16 +14,20 @@ export const VaultOverviewContent = ({
   return (
     <div className="mb-8 animate-fade-in">
       <div className="flex items-start justify-between mb-4">
-        <div>
+        <div className="">
           <h1 className="text-4xl font-bold text-white mb-2">Vault</h1>
-          <p className="text-gray-400">
+          <p className="text-gray-400 pr-4">
             Supply your tokens into a secure Vault to effortlessly earn
             optimized yield
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-gray-400 text-sm">Total Supply</span>
-          <span className="text-white font-semibold" suppressHydrationWarning>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-gray-400 text-sm whitespace-nowrap">
+            Total Supply
+          </span>
+          <span
+            className="text-white font-semibold whitespace-nowrap"
+            suppressHydrationWarning>
             ${formatCompactNumber(totalSupply)}
           </span>
         </div>
