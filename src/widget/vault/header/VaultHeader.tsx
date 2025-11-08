@@ -17,7 +17,7 @@ export const VaultHeader = ({ currentVaultId }: VaultHeaderProps) => {
   const router = useRouter();
   return (
     <div className="flex items-center justify-between p-4">
-      <button onClick={() => router.back()} className="p-2">
+      <button onClick={() => router.back()} className="py-2">
         <svg
           width="24"
           height="24"

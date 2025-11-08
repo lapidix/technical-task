@@ -6,17 +6,15 @@ import { Suspense } from "react";
 
 export const MainPage = () => {
   return (
-    <div className="min-h-screen bg-black flex flex-col">
-      <main className="max-w-7xl mx-auto  flex-1 flex flex-col w-full px-6">
+    <div className="min-h-screen bg-black flex flex-col relative">
+      <main className="max-w-7xl mx-auto flex-1 flex flex-col w-full px-6 ">
         <Header />
         {/* Overview Section */}
-        <div className="my-8 animate-fade-in">
-          <VaultOverview />
-        </div>
+        <VaultOverview />
         {/* Vault List Section */}
-        <div className="flex-1 flex flex-col space-y-4">
-          <div className="flex items-center mb-8">
-            <h2 className="text-2xl font-semibold text-white">All Vaults</h2>
+        <div className="flex-1 flex flex-col space-y-4 mt-10">
+          <div className="flex items-center">
+            <h2 className="text-xl font-medium text-gray-50">All Vaults</h2>
           </div>
 
           <div className="flex-1">

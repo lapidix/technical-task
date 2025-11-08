@@ -17,6 +17,7 @@ interface SupplyFormProps {
 }
 
 export const SupplyForm = ({ vault }: SupplyFormProps) => {
+  console.log(vault.decimals);
   const { balance: tokenBalance, refetchBalance: refetchTokenBalance } =
     useTokenBalance(vault.tokenAddress, vault.decimals);
   const { price: tokenPrice } = useTokenUsdPrice(vault.coinGeckoId);
@@ -224,11 +225,11 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
         </div>
 
         {/* Number Pad */}
-        <NumberPad
-          onNumberClick={handleNumberClick}
-          onBackspace={handleBackspace}
-        />
       </div>
+      <NumberPad
+        onNumberClick={handleNumberClick}
+        onBackspace={handleBackspace}
+      />
     </div>
   );
 };

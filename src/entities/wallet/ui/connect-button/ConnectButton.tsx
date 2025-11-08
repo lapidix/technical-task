@@ -1,5 +1,4 @@
 import { tcm } from "@/shared/libs";
-import { ConnectIcon } from "@/shared/ui/icons/common";
 import { HTMLAttributes } from "react";
 
 export const ConnectButton: React.FC<HTMLAttributes<HTMLButtonElement>> = ({
@@ -9,14 +8,12 @@ export const ConnectButton: React.FC<HTMLAttributes<HTMLButtonElement>> = ({
   return (
     <button
       className={tcm(
-        "w-44 px-4 bg-blue-600 hover:bg-blue-700 font-semibold transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/25",
+        "min-w-32 px-4 py-1.5 flex items-center justify-center gap-2 rounded-2xl bg-[#D2EC6F] text-black font-medium transition-all duration-200 hover:bg-[#C5DF5F] hover:scale-[1.01]",
         className
       )}
       {...props}>
-      <span className="flex items-center gap-2">
-        <ConnectIcon />
-        Connect
-      </span>
+      {/* <ConnectIcon className="w-4 h-4" /> */}
+      <span className="text-sm">Connect Wallet</span>
     </button>
   );
 };

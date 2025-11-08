@@ -1,4 +1,13 @@
 export { CloseIcon } from "./CloseIcon";
 export { ConnectIcon } from "./ConnectIcon";
+export { DownArrowIcon } from "./DownArrowIcon";
+export { EarnIcon } from "./EarnIcon";
+export { InformationIcon } from "./InformationIcon";
 export { LogoIcon } from "./LogoIcon";
+export { MarketIcon } from "./MarketIcon";
+export { MenuIcon } from "./MenuIcon";
+export { PointIcon } from "./PointIcon";
+export { PortfolioIcon } from "./PortfolioIcon";
+export { RefreshIcon } from "./RefreshIcon";
+export { RightArrowIcon } from "./RightArrowIcon";
 export { SearchIcon } from "./SearchIcon";

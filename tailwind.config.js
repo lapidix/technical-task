@@ -3,6 +3,15 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}", "./app/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
+      colors: {
+        accent: {
+          DEFAULT: "#D2EC6F",
+          hover: "#C5DF5F",
+        },
+        gray: {
+          50: "#ECEFEC",
+        },
+      },
       animation: {
         shimmer: "shimmer 1.5s ease-in-out infinite",
         "fade-in": "fadeIn 0.3s ease-in-out",

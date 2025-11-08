@@ -20,28 +20,26 @@ export const VaultList = () => {
   }, [allVaultData, searchQuery]);
 
   return (
-    <div className="space-y-4">
+    <div>
       <div className="relative">
         <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
-          <SearchIcon className="w-5 h-5 text-gray-400" />
+          <SearchIcon className="w-[18px] h-[18px]" />
         </div>
         <input
           type="text"
           placeholder="Search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-gray-800 text-white rounded-full py-3 pl-12 pr-4 outline-none focus:ring-2 focus:ring-gray-600 placeholder-gray-500"
+          className="w-full bg-[#1C1D1C] text-sm text-gray-50 rounded-full py-3.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-[#2F332F] placeholder-gray-50/12"
         />
       </div>
-      <div className="flex items-center justify-between pt-8 pb-2 px-6">
-        <h2 className="text-xl font-semibold text-gray-500">Vault</h2>
-        <h3 className="text-lg font-semibold text-gray-500">APY</h3>
+      <div className="flex items-center justify-between pb-1 pt-4">
+        <h2 className="text-sm font-medium text-[#8C938C]">Vault</h2>
+        <h3 className="text-sm font-medium text-[#8C938C]">APY</h3>
       </div>
-      <div className="space-y-3">
-        {filteredVaults.map((vault) => (
-          <VaultListItem key={vault.id} vault={vault} />
-        ))}
-      </div>
+      {filteredVaults.map((vault) => (
+        <VaultListItem key={vault.id} vault={vault} />
+      ))}
     </div>
   );
 };

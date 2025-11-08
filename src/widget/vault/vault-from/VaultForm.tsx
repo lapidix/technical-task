@@ -13,7 +13,7 @@ export const VaultForm = ({ vault }: VaultFormProps) => {
   const [mode, setMode] = useState<"supply" | "withdraw">("supply");
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col ">
       {/* Mode Tabs */}
       <div className="px-6 py-4">
         <div className="flex gap-2 bg-gray-900 rounded-lg p-1">

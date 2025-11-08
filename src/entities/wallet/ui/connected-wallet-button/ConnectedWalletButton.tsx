@@ -1,28 +1,37 @@
 import { tcm } from "@/shared/libs";
+import { DownArrowIcon } from "@/shared/ui/icons/common";
 import { HTMLAttributes } from "react";
 
 interface ConnectedWalletButtonProps extends HTMLAttributes<HTMLButtonElement> {
-  address: string;
+  address?: string;
+  isLoading?: boolean;
 }
 
 export const ConnectedWalletButton: React.FC<ConnectedWalletButtonProps> = ({
   address,
+  isLoading = false,
   className,
   ...props
 }) => {
   return (
     <button
       className={tcm(
-        `w-44 gap-2 px-4 bg-gray-800 hover:bg-gray-700 border border-gray-700 transition-all duration-200 hover:scale-[1.02]`,
+        `min-w-32 px-2 py-1.5 flex items-center justify-center rounded-2xl bg-[#ECEFEC1F] transition-all duration-200`,
+        !isLoading && "hover:bg-gray-700 hover:scale-[1.01]",
         className
       )}
+      disabled={isLoading}
       {...props}>
-      <div className="flex items-center gap-2">
-        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-        <span className="font-mono text-sm">
-          {address.slice(0, 6)}...{address.slice(-4)}
-        </span>
-      </div>
+      {isLoading ? (
+        <div className="h-5 w-full bg-white/10 rounded animate-pulse" />
+      ) : (
+        <>
+          <div className="text-sm font-medium text-[#C2C8C2] px-2">
+            {address?.slice(0, 5)}...{address?.slice(-3)}
+          </div>
+          <DownArrowIcon className="w-4 h-4" />
+        </>
+      )}
     </button>
   );
 };

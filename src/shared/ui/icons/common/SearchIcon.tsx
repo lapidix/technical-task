@@ -1,4 +1,3 @@
-import { tcm } from "@/shared/libs";
 import * as React from "react";
 
 export const SearchIcon = ({
@@ -6,16 +5,14 @@ export const SearchIcon = ({
   ...props
 }: React.SVGAttributes<SVGSVGElement>) => (
   <svg
-    className={tcm("w-6 h-6", className)}
+    viewBox="0 0 18 18"
     fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
     {...props}>
     <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+      d="M4.56358 4.31393C6.49183 2.57189 9.46893 2.62953 11.3273 4.48776L11.5011 4.67135C13.0388 6.37334 13.1727 8.89124 11.9054 10.7368L15.0587 13.8901L13.9982 14.9506L10.8771 11.8296C9.01475 13.2889 6.34337 13.2168 4.56358 11.6089L4.37999 11.435C2.46172 9.51677 2.46176 6.40604 4.37999 4.48776L4.56358 4.31393ZM10.2667 5.5483C8.93419 4.21586 6.77303 4.21583 5.44053 5.5483C4.10811 6.8808 4.10807 9.042 5.44053 10.3745C6.77301 11.7069 8.93418 11.7069 10.2667 10.3745C11.5992 9.04198 11.5992 6.8808 10.2667 5.5483Z"
+      fill="#8C938C"
     />
   </svg>
 );
