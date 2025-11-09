@@ -14,26 +14,22 @@ export function Header() {
 
   return (
     <Fragment>
-      <header className="sticky top-0 z-50 bg-black text-white py-4 min-h-16">
-        <div className="">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <Link href="/">
-              <LogoIcon className="w-12 h-12 text-white cursor-pointer" />
+      <header className="sticky top-0 z-50 bg-black text-white py-4 min-h-16 px-4">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/">
+            <LogoIcon className="w-10 h-10 text-white cursor-pointer" />
+          </Link>
+
+          {/* Right side - Connect button or Account info */}
+          <div className="flex-1 flex items-center justify-end gap-1.5">
+            <Link className="" href="/faucet">
+              Faucet
             </Link>
 
-            {/* Right side - Connect button or Account info */}
-            <div className="flex-1 flex items-center justify-end gap-1.5">
-              <Link className="hidden xl:block" href="/faucet">
-                Faucet
-              </Link>
-
-              <RefreshIcon className="w-7 h-7 cursor-pointer text-accent" />
-              <WalletConnectionButton
-                onOpenModal={() => setIsModalOpen(true)}
-              />
-              <MenuIcon className="w-7 h-7 cursor-pointer text-gray-50" />
-            </div>
+            <RefreshIcon className="w-6 h-6 cursor-pointer text-accent" />
+            <WalletConnectionButton onOpenModal={() => setIsModalOpen(true)} />
+            <MenuIcon className="w-6 h-6 cursor-pointer text-gray-50" />
           </div>
         </div>
       </header>

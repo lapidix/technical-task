@@ -5,11 +5,10 @@ import { useTokenUsdPrice } from "@/features/erc20/hooks";
 import { useVaultBalance } from "@/features/vault/hooks";
 import { VaultService } from "@/features/vault/services";
 import { useWalletConnection } from "@/shared/hooks";
-import { formatAmount } from "@/shared/libs";
+import { formatAmount, formatCompactNumber } from "@/shared/libs";
 import { NetworkIcon } from "@/shared/ui/icons/network";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { NumberPad } from "./NumberPad";
-import { VaultInformation } from "./VaultInformation";
 
 interface WithdrawFormProps {
   vault: VaultBase;
@@ -22,6 +21,12 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
     useVaultBalance(vault.vaultAddress, vault.decimals, address);
 
   const [amount, setAmount] = useState("0");
+  const [showNumberPad, setShowNumberPad] = useState(false);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+
+  const isOpeningRef = useRef(false);
+
+  const NUMBER_PAD_HEIGHT = 213;
 
   const handleNumberClick = (num: string) => {
     if (num === ".") {
@@ -51,86 +56,179 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
       return;
     }
 
+    setIsWithdrawing(true);
+    let hash: `0x${string}` | undefined;
+
     try {
-      const hash = await VaultService.withdrawFromVault(
+      hash = await VaultService.withdrawFromVault(
         vault.vaultAddress,
         amount,
         vault.decimals,
         address
       );
-      alert(`✅ ${amount} ${vault.symbol} Withdraw Success!\n${hash}`);
-      setAmount("0");
-      refetchVaultBalance();
+
+      // 트랜잭션 confirm 대기
+      const { waitForTransactionReceipt } = await import("wagmi/actions");
+      const { wagmiConfig } = await import("@/shared/config/wagmi.config");
+
+      const receipt = await waitForTransactionReceipt(wagmiConfig, {
+        hash,
+        confirmations: 1,
+        pollingInterval: 1000,
+        timeout: 60_000,
+      });
+
+      if (receipt.status === "success") {
+        alert(`✅ ${amount} ${vault.symbol} Withdraw Success!`);
+        setAmount("0");
+        refetchVaultBalance();
+      } else {
+        alert(`❌ Transaction reverted!`);
+      }
     } catch (error) {
-      console.error("Withdraw error:", error);
-      alert("❌ Withdraw Fail: " + (error as Error).message);
+      const errorMsg =
+        (error as { shortMessage?: string; message?: string })?.shortMessage ||
+        (error as { shortMessage?: string; message?: string })?.message ||
+        "Unknown error";
+      const prefix = hash ? "Transaction failed" : "Transaction rejected";
+      alert(`❌ ${prefix}: ${errorMsg}`);
+    } finally {
+      setIsWithdrawing(false);
     }
   };
 
+  const handleCloseNumberPad = () => {
+    // 열리는 중이거나 이미 닫혀있으면 무시
+    if (isOpeningRef.current || !showNumberPad) return;
+
+    setShowNumberPad(false);
+  };
+
+  const handleOpenNumberPad = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    isOpeningRef.current = true;
+    setShowNumberPad(true);
+    // 애니메이션 완료 후 isOpeningRef 리셋
+    setTimeout(() => {
+      isOpeningRef.current = false;
+    }, 300);
+  };
+
   return (
-    <div className="flex flex-col flex-1">
-      {/* Top Content */}
-      <div className="flex-1 overflow-y-auto">
-        {/* Token Info */}
-        <div className="px-6 py-4">
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold">Withdraw</h1>
-            <NetworkIcon icon={vault.icon} className="w-8 h-8" />
-            <span className="text-2xl font-bold">{vault.symbol}</span>
+    <div
+      className="flex flex-col flex-1 overflow-hidden"
+      onClick={handleCloseNumberPad}>
+      {/* Scrollable Content */}
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{
+          paddingBottom: showNumberPad ? `${NUMBER_PAD_HEIGHT}px` : "0",
+          transition: "padding-bottom 0.3s ease-out",
+          overscrollBehaviorY: "none",
+        }}>
+        <div className="px-4 py-2 flex flex-col gap-8">
+          {/* Token Info */}
+          <div>
+            <div className="flex items-center gap-3 mb-1.5">
+              <h1 className="text-xl text-[#C2C8C2] font-medium">Withdraw</h1>
+              <div className="flex items-center gap-x-1">
+                <NetworkIcon icon={vault.icon} className="w-5 h-5" />
+                <span className="text-xl font-medium">{vault.symbol}</span>
+              </div>
+            </div>
+
+            <div className="text-[#8C938C] font-medium text-sm">
+              Withdrawable:{" "}
+              <span
+                className="text-[#DFE2DF] font-medium"
+                suppressHydrationWarning>
+                {vaultBalance.toLocaleString()}
+              </span>
+            </div>
           </div>
-          <div className="text-gray-400 text-sm">
-            Withdrawable:{" "}
-            <span className="text-white font-medium" suppressHydrationWarning>
-              {vaultBalance}
-            </span>
+          {/* Vault Info */}
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-[#C2C8C2] text-xl font-medium">From</span>
+              <div className="flex items-center gap-x-1">
+                <NetworkIcon icon={vault.icon} className="w-5 h-5" />
+                <span className="text-xl font-medium">
+                  {vault.symbol} Multiply
+                </span>
+              </div>
+            </div>
+            <div className="text-[#8C938C] font-medium text-sm">
+              My Supplied:{" "}
+              <span
+                className="text-[#DFE2DF] font-medium"
+                suppressHydrationWarning>
+                $
+                {(vaultBalance * tokenPrice).toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}{" "}
+                <span className="text-gray-500" suppressHydrationWarning>
+                  {vaultBalance.toLocaleString("en-US", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  })}{" "}
+                  {vault.symbol}-MV
+                </span>
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Vault Info */}
-        <VaultInformation
-          vault={vault}
-          vaultBalance={vaultBalance}
-          tokenPrice={tokenPrice}
-        />
-
         {/* Amount Input */}
-        <div className="px-6 py-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-5xl font-bold w-full">
+        <div className="px-4 pt-6 pb-1.5">
+          <div
+            className="flex items-center justify-between mb-4 cursor-pointer"
+            onClick={handleOpenNumberPad}>
+            <div className="text-4xl text-[#ECEFEC] font-medium w-full">
               {formatAmount(amount)}
             </div>
-            <div className="text-2xl text-gray-500">
+            <div className="text-2xl text-[#ECEFEC66]">
               ~$
-              {(parseFloat(amount || "0") * tokenPrice).toLocaleString(
-                "en-US",
-                {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }
-              )}
+              {formatCompactNumber(parseFloat(amount || "0") * tokenPrice)}
             </div>
           </div>
+          <div className="flex items-center gap-x-2">
+            <button
+              onClick={handleUseMax}
+              className="text-xs font-medium text-[#9DA59D] bg-[#ECEFEC1F] px-2 py-1.5 rounded"
+              suppressHydrationWarning>
+              Use Max {vaultBalance.toLocaleString()} {vault.symbol}
+            </button>
+            <button
+              onClick={() => setAmount("0")}
+              className="text-xs font-medium text-[#9DA59D] bg-[#ECEFEC1F] px-2 py-1.5 rounded"
+              suppressHydrationWarning>
+              Clear
+            </button>
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <div
+          className="flex py-4 px-4 gap-3"
+          onClick={(e) => e.stopPropagation()}>
           <button
-            onClick={handleUseMax}
-            className="text-sm text-gray-400 bg-gray-800 px-3 py-1 rounded"
-            suppressHydrationWarning>
-            Use Max {vaultBalance} {vault.symbol}
+            onClick={handleWithdraw}
+            disabled={parseFloat(amount || "0") <= 0 || isWithdrawing}
+            className="w-full bg-[#E6F5AA] text-lg text-[#17330D] font-medium py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#D4E699] transition-colors">
+            {isWithdrawing ? "Withdrawing..." : "Withdraw"}
           </button>
         </div>
       </div>
-      {/* Fixed Bottom Section */}
-      <div className="">
-        {/* Action Button */}
-        <div className="flex py-4 px-6 mb-6 space-x-3">
-          <button
-            onClick={handleWithdraw}
-            disabled={parseFloat(amount || "0") <= 0}
-            className="w-full bg-[#D4FF00] text-black font-bold py-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
-            Withdraw
-          </button>
-        </div>
 
-        {/* Number Pad */}
+      {/* Number Pad */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ease-out"
+        style={{
+          transform: showNumberPad ? "translateY(0)" : "translateY(100%)",
+          pointerEvents: showNumberPad ? "auto" : "none",
+        }}
+        onClick={(e) => e.stopPropagation()}>
         <NumberPad
           onNumberClick={handleNumberClick}
           onBackspace={handleBackspace}

@@ -2,6 +2,7 @@
 import { VAULT_QUERY_KEYS } from "@/entities/vault/constants";
 import { SupportedVaultId } from "@/entities/vault/types";
 import { VaultService } from "@/features/vault/services";
+import { LeftArrowIcon } from "@/shared/ui/icons/common";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
@@ -16,24 +17,16 @@ export const VaultHeader = ({ currentVaultId }: VaultHeaderProps) => {
   });
   const router = useRouter();
   return (
-    <div className="flex items-center justify-between p-4">
+    <header className="sticky top-0 z-50 bg-black text-white flex items-center justify-between px-4 py-2">
       <button onClick={() => router.back()} className="py-2">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2">
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
+        <LeftArrowIcon className="w-7 h-7" />
       </button>
-      <div className="text-gray-400 text-sm">
+      <div className="text-[#8C938C] text-base">
         APY{" "}
-        <span className="text-white font-semibold">
+        <span className="text-white font-medium">
           {`${(apy * 100).toFixed(2)}%`}
         </span>
       </div>
-    </div>
+    </header>
   );
 };

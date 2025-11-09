@@ -30,21 +30,21 @@ export function WalletConnectionModal({
     <Modal isOpen={isOpen} onClose={onClose}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold text-[#ECEFEC]">
           {isConnected ? "Account" : "Connect Wallet"}
         </h2>
         <button
           onClick={onClose}
           aria-label="Close modal"
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <CloseIcon className="text-gray-500" />
+          className="p-2 hover:bg-[#2A2D2A] rounded-lg transition-colors">
+          <CloseIcon className="text-[#8C938C]" />
         </button>
       </div>
 
       {/* Content */}
       {isConnected ? (
         <div className="space-y-4">
-          <p className="text-gray-600 text-center">Connected to your wallet</p>
+          <p className="text-[#C2C8C2] text-center">Connected to your wallet</p>
           <DisconnectButton onClick={onClose}>Disconnect</DisconnectButton>
         </div>
       ) : (
@@ -62,8 +62,8 @@ export function WalletConnectionModal({
       )}
 
       {/* Footer */}
-      <div className="mt-6 pt-6 border-t border-gray-200">
-        <p className="text-xs text-gray-500 text-center">
+      <div className="mt-6 pt-6 border-t border-[#2A2D2A]">
+        <p className="text-xs text-[#8C938C] text-center">
           By connecting, you agree to our Terms of Service
         </p>
       </div>

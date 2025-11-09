@@ -7,7 +7,6 @@ import { formatUnits, parseUnits } from "viem";
 import { readContract, readContracts, writeContract } from "wagmi/actions";
 
 export class VaultService {
-  // *LMG
   private static async getTokenPrices(): Promise<Record<string, number>> {
     try {
       const coingeckoIds = SUPPORTED_VAULTS.map((v) => v.coinGeckoId).join(",");
@@ -29,10 +28,6 @@ export class VaultService {
     }
   }
 
-  /**
-   * Get total supply value across all vaults from contract
-   */
-  // *LMG
   static async getAllVaultTotalSupply(): Promise<number> {
     // 1. Get total assets from contracts
     const totalAssetsData = await VaultService.getVaultTotalAssets();
@@ -53,8 +48,6 @@ export class VaultService {
     return total;
   }
 
-  // *LMG
-
   static async getMyTotalSupply(userAddress: `0x${string}`): Promise<number> {
     // 1. Get user balances from contracts
     const balanceData = await VaultService.getVaultBalances(userAddress);
@@ -74,8 +67,6 @@ export class VaultService {
 
     return total;
   }
-
-  // *LMG
 
   static async getMyTotalAPY(userAddress: `0x${string}`): Promise<number> {
     // 1. Get user balances from contracts
@@ -104,7 +95,6 @@ export class VaultService {
     return weightedAPY;
   }
 
-  // *LMG
   static async getMyVaultsCount(userAddress: `0x${string}`): Promise<number> {
     const balanceData = await VaultService.getVaultBalances(userAddress);
     return balanceData.filter((result) => result && Number(result) > 0).length;
@@ -137,11 +127,6 @@ export class VaultService {
   }
 
   // ! 이거 나중에 내 볼트 리스트에서 사용 예정
-  /**
-   * Get vault list data with user balances
-   * @param userAddress - User wallet address (optional)
-   * @returns Vault data with token prices and user balances
-   */
   static async getVaultListData(
     userAddress?: `0x${string}`
   ): Promise<VaultEntity[]> {
@@ -183,7 +168,6 @@ export class VaultService {
     });
   }
 
-  // * LMG
   static async getUserVaultBalance(
     vaultAddress: `0x${string}`,
     userAddress: `0x${string}`,
@@ -201,7 +185,6 @@ export class VaultService {
     return Number(balanceString);
   }
 
-  // *LMG
   static async depositToVault(
     vaultAddress: `0x${string}`,
     amount: string,
@@ -220,7 +203,6 @@ export class VaultService {
     return hash;
   }
 
-  // *LMG
   static async withdrawFromVault(
     vaultAddress: `0x${string}`,
     amount: string,
@@ -233,7 +215,7 @@ export class VaultService {
       address: vaultAddress,
       abi: VAULT_ABI,
       functionName: "withdraw",
-      args: [withdrawAmount, receiver],
+      args: [withdrawAmount, receiver, receiver],
     });
 
     return hash;

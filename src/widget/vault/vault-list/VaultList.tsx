@@ -23,14 +23,14 @@ export const VaultList = () => {
     <div>
       <div className="relative">
         <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
-          <SearchIcon className="w-[18px] h-[18px]" />
+          <SearchIcon className="w-5 h-5" />
         </div>
         <input
           type="text"
           placeholder="Search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-[#1C1D1C] text-sm text-gray-50 rounded-full py-3.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-[#2F332F] placeholder-gray-50/12"
+          className="w-full bg-[#1C1D1C] text-xs text-gray-50 rounded-full py-2.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-[#2F332F] placeholder-gray-50/12"
         />
       </div>
       <div className="flex items-center justify-between pb-1 pt-4">

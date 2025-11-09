@@ -1,8 +1,10 @@
+export { BackSpaceIcon } from "./BackSpaceIcon";
 export { CloseIcon } from "./CloseIcon";
 export { ConnectIcon } from "./ConnectIcon";
 export { DownArrowIcon } from "./DownArrowIcon";
 export { EarnIcon } from "./EarnIcon";
 export { InformationIcon } from "./InformationIcon";
+export { LeftArrowIcon } from "./LeftArrowIcon";
 export { LogoIcon } from "./LogoIcon";
 export { MarketIcon } from "./MarketIcon";
 export { MenuIcon } from "./MenuIcon";

@@ -21,9 +21,9 @@ export const FaucetPage = () => {
   return (
     <div className="min-h-screen bg-black">
       <Header />
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8 animate-fade-in">
-          <h1 className="text-4xl font-bold text-white mb-2">Faucet</h1>
+      <main className="max-w-2xl mx-auto px-4 py-2">
+        <div className="flex flex-col gap-y-2">
+          <h1 className="text-2xl font-medium text-gray-50 ">Faucet</h1>
           <p className="text-gray-400">
             Get test tokens for Base Sepolia testnet.
           </p>

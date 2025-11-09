@@ -13,7 +13,6 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
-      // * Barrel exports 강제: index.ts를 통한 import만 허용
       "no-restricted-imports": [
         "error",
         {

@@ -52,6 +52,7 @@ export class ERC20Service {
 
       return hash;
     } catch (error) {
+      console.error("Error approving token:", error);
       throw error;
     }
   }

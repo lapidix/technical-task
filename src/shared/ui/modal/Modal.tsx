@@ -12,7 +12,7 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <Backdrop onClick={onClose} />
-      <div className="relative z-10 bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6">
+      <div className="relative z-10 bg-[#1A1D1A] rounded-2xl shadow-xl max-w-md w-full mx-4 p-6">
         {children}
       </div>
     </div>

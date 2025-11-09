@@ -6,18 +6,16 @@ import { ERC20Service } from "@/features/erc20/services";
 import { useVaultBalance } from "@/features/vault/hooks";
 import { VaultService } from "@/features/vault/services";
 import { useSequentialTransactions, useWalletConnection } from "@/shared/hooks";
-import { formatAmount } from "@/shared/libs";
+import { formatAmount, formatCompactNumber } from "@/shared/libs";
 import { NetworkIcon } from "@/shared/ui/icons/network";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { NumberPad } from "./NumberPad";
-import { VaultInformation } from "./VaultInformation";
 
 interface SupplyFormProps {
   vault: VaultBase;
 }
 
 export const SupplyForm = ({ vault }: SupplyFormProps) => {
-  console.log(vault.decimals);
   const { balance: tokenBalance, refetchBalance: refetchTokenBalance } =
     useTokenBalance(vault.tokenAddress, vault.decimals);
   const { price: tokenPrice } = useTokenUsdPrice(vault.coinGeckoId);
@@ -26,8 +24,14 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
     useVaultBalance(vault.vaultAddress, vault.decimals, address);
 
   const [amount, setAmount] = useState("0");
+  const [showNumberPad, setShowNumberPad] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
+  const [isDepositing, setIsDepositing] = useState(false);
 
-  // 순차 트랜잭션 실행 (Approve + Deposit)
+  const isOpeningRef = useRef(false);
+
+  const NUMBER_PAD_HEIGHT = 213;
+
   const {
     execute: executeApproveAndDeposit,
     isExecuting,
@@ -44,7 +48,6 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
     },
   });
 
-  // 진행 상황 표시
   const getButtonText = () => {
     if (!isExecuting) return "Approve + Deposit";
     if (currentStep === 0) return "Approving... (1/2)";
@@ -52,7 +55,6 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
     return "Processing...";
   };
 
-  // * NumberPad handlers
   const handleNumberClick = (num: string) => {
     if (num === ".") {
       if (!amount.includes(".")) {
@@ -65,13 +67,11 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
     }
   };
 
-  // * NumberPad handlers
   const handleBackspace = () => {
     const newAmount = amount.length > 1 ? amount.slice(0, -1) : "0";
     setAmount(newAmount);
   };
 
-  // * NumberPad handlers
   const handleUseMaxBalance = () => {
     const balanceStr = tokenBalance.toString();
     setAmount(balanceStr);
@@ -83,17 +83,41 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
       return;
     }
 
+    setIsApproving(true);
+    let hash: `0x${string}` | undefined;
+
     try {
-      const hash = await ERC20Service.approveToken(
+      hash = await ERC20Service.approveToken(
         vault.tokenAddress,
         vault.vaultAddress,
         amount,
         vault.decimals
       );
-      alert("✅ Approve Success!\n" + hash);
+
+      const { waitForTransactionReceipt } = await import("wagmi/actions");
+      const { wagmiConfig } = await import("@/shared/config/wagmi.config");
+
+      const receipt = await waitForTransactionReceipt(wagmiConfig, {
+        hash,
+      });
+
+      if (receipt.status === "success") {
+        alert("✅ Approve Success!");
+      } else {
+        alert(`❌ Transaction reverted!`);
+      }
     } catch (error) {
       console.error("Approve error:", error);
-      alert("❌ Approve Fail: " + (error as Error).message);
+
+      if (hash) {
+        alert(
+          `❌ Transaction failed!\n\nThe transaction was reverted by the contract.`
+        );
+      } else {
+        alert("❌ Transaction rejected: " + (error as Error).message);
+      }
+    } finally {
+      setIsApproving(false);
     }
   };
 
@@ -103,20 +127,44 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
       return;
     }
 
+    setIsDepositing(true);
+    let hash: `0x${string}` | undefined;
+
     try {
-      const hash = await VaultService.depositToVault(
+      hash = await VaultService.depositToVault(
         vault.vaultAddress,
         amount,
         vault.decimals,
         address
       );
-      alert(`✅ ${amount} ${vault.symbol} Deposit Success!\n${hash}`);
-      setAmount("0");
-      refetchTokenBalance();
-      refetchVaultBalance();
+
+      const { waitForTransactionReceipt } = await import("wagmi/actions");
+      const { wagmiConfig } = await import("@/shared/config/wagmi.config");
+
+      const receipt = await waitForTransactionReceipt(wagmiConfig, {
+        hash,
+      });
+
+      if (receipt.status === "success") {
+        alert(`✅ ${amount} ${vault.symbol} Deposit Success!`);
+        setAmount("0");
+        refetchTokenBalance();
+        refetchVaultBalance();
+      } else {
+        alert(`❌ Transaction reverted!`);
+      }
     } catch (error) {
       console.error("Deposit error:", error);
-      alert("❌ Deposit Fail: " + (error as Error).message);
+
+      if (hash) {
+        alert(
+          `❌ Transaction failed!\n\nThe transaction was reverted by the contract.\nThis might happen if:\n- Insufficient allowance\n- Insufficient balance\n- Contract restrictions`
+        );
+      } else {
+        alert("❌ Transaction rejected: " + (error as Error).message);
+      }
+    } finally {
+      setIsDepositing(false);
     }
   };
 
@@ -127,7 +175,6 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
     }
 
     await executeApproveAndDeposit([
-      // Step 1: Approve
       async () => {
         return await ERC20Service.approveToken(
           vault.tokenAddress,
@@ -136,7 +183,6 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
           vault.decimals
         );
       },
-      // Step 2: Deposit (Approve 완료 후 자동 실행)
       async () => {
         return await VaultService.depositToVault(
           vault.vaultAddress,
@@ -148,88 +194,172 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
     ]);
   };
 
+  const handleCloseNumberPad = () => {
+    if (isOpeningRef.current || !showNumberPad) return;
+
+    setShowNumberPad(false);
+  };
+
+  const handleOpenNumberPad = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    isOpeningRef.current = true;
+    setShowNumberPad(true);
+    // 애니메이션 완료 후 isOpeningRef 리셋
+    setTimeout(() => {
+      isOpeningRef.current = false;
+    }, 300);
+  };
+
   return (
-    <div className="flex flex-col flex-1">
-      {/* Top Content */}
-      <div className="flex-1 overflow-y-auto">
-        {/* Token Info */}
-        <div className="px-6 py-4">
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold">Supply</h1>
-            <NetworkIcon icon={vault.icon} className="w-8 h-8" />
-            <span className="text-2xl font-bold">{vault.symbol}</span>
-          </div>
-          <div className="text-gray-400 text-sm">
-            Wallet Balance:{" "}
-            <span className="text-white font-medium" suppressHydrationWarning>
-              {tokenBalance.toLocaleString()}
-            </span>
-          </div>
-        </div>
-
-        {/* Vault Info */}
-        <VaultInformation
-          vault={vault}
-          vaultBalance={vaultBalance}
-          tokenPrice={tokenPrice}
-        />
-
-        {/* Amount Input */}
-        <div className="px-6 py-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-5xl font-bold w-full">
-              {formatAmount(amount)}
+    <div
+      className="flex flex-col flex-1 overflow-hidden"
+      onClick={handleCloseNumberPad}>
+      {/* Scrollable Content */}
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{
+          paddingBottom: showNumberPad ? `${NUMBER_PAD_HEIGHT}px` : "0",
+          transition: "padding-bottom 0.3s ease-out",
+          overscrollBehaviorY: "none",
+        }}>
+        <div className="px-4 py-2 flex flex-col gap-8">
+          {/* Token Info */}
+          <div>
+            <div className="flex items-center gap-3 mb-1.5">
+              <h1 className="text-xl text-[#C2C8C2] font-medium">Supply</h1>
+              <div className="flex items-center gap-x-1">
+                <NetworkIcon icon={vault.icon} className="w-5 h-5" />
+                <span className="text-xl font-medium">{vault.symbol}</span>
+              </div>
             </div>
-            <div className="text-2xl text-gray-500">
-              ~$
-              {(parseFloat(amount || "0") * tokenPrice).toLocaleString(
-                "en-US",
-                {
+
+            <div className="text-[#8C938C] font-medium text-sm">
+              Wallet Balance:{" "}
+              <span
+                className="text-[#DFE2DF] font-medium"
+                suppressHydrationWarning>
+                {tokenBalance.toLocaleString()}
+              </span>
+            </div>
+          </div>
+
+          {/* Vault Info */}
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-[#C2C8C2] text-xl font-medium">To</span>
+              <div className="flex items-center gap-x-1">
+                <NetworkIcon icon={vault.icon} className="w-5 h-5" />
+                <span className="text-xl font-medium">
+                  {vault.symbol} Multiply
+                </span>
+              </div>
+            </div>
+            <div className="text-[#8C938C] font-medium text-sm">
+              My Supplied:{" "}
+              <span
+                className="text-[#DFE2DF] font-medium"
+                suppressHydrationWarning>
+                $
+                {(vaultBalance * tokenPrice).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-                }
-              )}
+                })}{" "}
+                <span className="text-gray-500" suppressHydrationWarning>
+                  {vaultBalance.toLocaleString("en-US", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  })}{" "}
+                  {vault.symbol}-MV
+                </span>
+              </span>
             </div>
           </div>
-          <button
-            onClick={handleUseMaxBalance}
-            className="text-sm text-gray-400 bg-gray-800 px-3 py-1 rounded"
-            suppressHydrationWarning>
-            Use Balance {tokenBalance.toLocaleString()} {vault.symbol}
-          </button>
         </div>
-      </div>
 
-      {/* Fixed Bottom Section */}
-      <div className="">
-        {/* Action Buttons */}
-        <div className="flex py-4 px-6 mb-6 space-x-3">
-          <button
-            onClick={handleApprove}
-            disabled={parseFloat(amount || "0") <= 0 || isExecuting}
-            className="w-full bg-yellow-600 text-white font-bold py-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-yellow-700 transition-colors">
-            Approve
-          </button>
-          <button
-            onClick={handleDeposit}
-            disabled={parseFloat(amount || "0") <= 0 || isExecuting}
-            className="w-full bg-green-600 text-white font-bold py-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-700 transition-colors">
-            Deposit
-          </button>
+        {/* Amount Input */}
+        <div className="px-4 pt-6 pb-1.5">
+          <div
+            className="flex items-center justify-between mb-4 cursor-pointer"
+            onClick={handleOpenNumberPad}>
+            <div className="text-4xl text-[#ECEFEC] font-medium w-full">
+              {formatAmount(amount)}
+            </div>
+            <div className="text-2xl text-[#ECEFEC66]">
+              ~$
+              {formatCompactNumber(parseFloat(amount || "0") * tokenPrice)}
+            </div>
+          </div>
+          <div className="flex items-center gap-x-2">
+            <button
+              onClick={handleUseMaxBalance}
+              className="text-xs font-medium text-[#9DA59D] bg-[#ECEFEC1F] px-2 py-1.5 rounded"
+              suppressHydrationWarning>
+              Use Balance {tokenBalance.toLocaleString()} {vault.symbol}
+            </button>
+            <button
+              onClick={() => setAmount("0")}
+              className="text-xs font-medium text-[#9DA59D] bg-[#ECEFEC1F] px-2 py-1.5 rounded"
+              suppressHydrationWarning>
+              Clear
+            </button>
+          </div>
+        </div>
+
+        {/* Action Buttons - 스크롤 영역 안으로 이동 */}
+        <div
+          className="flex flex-col py-2 px-4 gap-3"
+          onClick={(e) => e.stopPropagation()}>
+          <div className="flex gap-2">
+            <button
+              onClick={handleApprove}
+              disabled={
+                parseFloat(amount || "0") <= 0 ||
+                isExecuting ||
+                isApproving ||
+                isDepositing
+              }
+              className="flex-1 bg-[#3A3D3A] text-lg text-[#ECEFEC] font-medium py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#4A4D4A] transition-colors">
+              {isApproving ? "Approving..." : "Approve"}
+            </button>
+            <button
+              onClick={handleDeposit}
+              disabled={
+                parseFloat(amount || "0") <= 0 ||
+                isExecuting ||
+                isApproving ||
+                isDepositing
+              }
+              className="flex-1 bg-[#3A3D3A] text-lg text-[#ECEFEC] font-medium py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#4A4D4A] transition-colors">
+              {isDepositing ? "Depositing..." : "Deposit"}
+            </button>
+          </div>
           <button
             onClick={handleApproveAndDeposit}
-            disabled={parseFloat(amount || "0") <= 0 || isExecuting}
-            className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors">
+            disabled={
+              parseFloat(amount || "0") <= 0 ||
+              isExecuting ||
+              isApproving ||
+              isDepositing
+            }
+            className="w-full bg-[#E6F5AA] text-lg text-[#17330D] font-medium py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#D4E699] transition-colors">
             {getButtonText()}
           </button>
         </div>
-
-        {/* Number Pad */}
       </div>
-      <NumberPad
-        onNumberClick={handleNumberClick}
-        onBackspace={handleBackspace}
-      />
+
+      {/* Number Pad */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ease-out"
+        style={{
+          transform: showNumberPad ? "translateY(0)" : "translateY(100%)",
+          pointerEvents: showNumberPad ? "auto" : "none",
+        }}
+        onClick={(e) => e.stopPropagation()}>
+        <NumberPad
+          onNumberClick={handleNumberClick}
+          onBackspace={handleBackspace}
+        />
+      </div>
     </div>
   );
 };

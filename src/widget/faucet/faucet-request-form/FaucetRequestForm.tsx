@@ -34,7 +34,7 @@ export const FaucetRequestForm = () => {
   };
 
   return (
-    <div className="bg-gray-900 rounded-xl p-6 space-y-6">
+    <div className="bg-black rounded-xl py-2 space-y-2">
       <BalanceDisplay symbol={selectedToken.symbol} balance={balance} />
 
       <TokenSelector
@@ -51,7 +51,7 @@ export const FaucetRequestForm = () => {
       <button
         onClick={handleSubmit}
         disabled={isPending || isConfirming || Number(amount) > 1000}
-        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-lg transition-colors">
+        className="w-full bg-[#E6F5AA] hover:bg-[#D4E699] disabled:bg-[#3A3D3A] disabled:cursor-not-allowed text-[#17330D] disabled:text-[#8C938C] font-semibold py-4 rounded-lg transition-colors">
         {isPending || isConfirming
           ? "Processing..."
           : Number(amount) > 1000

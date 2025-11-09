@@ -22,6 +22,7 @@ export const VAULT_ABI = [
     inputs: [
       { name: "assets", type: "uint256" },
       { name: "receiver", type: "address" },
+      { name: "owner", type: "address" },
     ],
     name: "withdraw",
     outputs: [{ name: "", type: "uint256" }],

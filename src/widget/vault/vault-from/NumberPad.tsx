@@ -1,3 +1,5 @@
+import { BackSpaceIcon } from "@/shared/ui/icons/common";
+
 interface NumberPadProps {
   onNumberClick: (num: string) => void;
   onBackspace: () => void;
@@ -5,30 +7,20 @@ interface NumberPadProps {
 
 export const NumberPad = ({ onNumberClick, onBackspace }: NumberPadProps) => {
   return (
-    <div className="px-6">
-      <div className="grid grid-cols-3 gap-4">
+    <div className="border-t border-l border-r border-gray-800 sticky bottom-0 left-0 right-0 bg-black z-50">
+      <div className="grid grid-cols-3">
         {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0"].map((num) => (
           <button
             key={num}
             onClick={() => onNumberClick(num)}
-            className="text-3xl font-light py-6 active:bg-gray-900 rounded-lg transition-colors">
+            className="text-2xl font-normal py-2.5 active:bg-gray-900 transition-colors border-r border-b border-gray-800 last:border-r-0">
             {num}
           </button>
         ))}
         <button
           onClick={onBackspace}
-          className="text-3xl font-light py-6 active:bg-gray-900 rounded-lg transition-colors flex items-center justify-center">
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2">
-            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" />
-            <line x1="18" y1="9" x2="12" y2="15" />
-            <line x1="12" y1="9" x2="18" y2="15" />
-          </svg>
+          className="text-3xl font-light py-2.5 active:bg-gray-900 transition-colors flex items-center justify-center border-b border-gray-800">
+          <BackSpaceIcon className="w-6 h-6" />
         </button>
       </div>
     </div>

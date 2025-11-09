@@ -7,20 +7,22 @@ import { Suspense } from "react";
 export const MainPage = () => {
   return (
     <div className="min-h-screen bg-black flex flex-col relative">
-      <main className="max-w-7xl mx-auto flex-1 flex flex-col w-full px-6 ">
+      <main className="max-w-7xl mx-auto flex-1 flex flex-col w-full">
         <Header />
-        {/* Overview Section */}
-        <VaultOverview />
-        {/* Vault List Section */}
-        <div className="flex-1 flex flex-col space-y-4 mt-10">
-          <div className="flex items-center">
-            <h2 className="text-xl font-medium text-gray-50">All Vaults</h2>
-          </div>
+        <div className="flex flex-col px-4">
+          {/* Overview Section */}
+          <VaultOverview />
+          {/* Vault List Section */}
+          <div className="flex-1 flex flex-col space-y-4 mt-10">
+            <div className="flex items-center">
+              <h2 className="text-xl font-medium text-gray-50">All Vaults</h2>
+            </div>
 
-          <div className="flex-1">
-            <Suspense fallback={<VaultListSkeleton />}>
-              <VaultList />
-            </Suspense>
+            <div className="flex-1">
+              <Suspense fallback={<VaultListSkeleton />}>
+                <VaultList />
+              </Suspense>
+            </div>
           </div>
         </div>
       </main>
