@@ -1,5 +1,7 @@
 import { TanstackQueryProvider } from "@/app/providers/tanstack-query";
+import { ToastProvider } from "@/app/providers/toast-provider";
 import { WagmiProvider } from "@/app/providers/wagmi";
+import { ToastContainer } from "@/shared/ui/toast";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ReactNode } from "react";
@@ -30,7 +32,12 @@ export function RootLayout({ children }: RootLayoutProps) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <WagmiProvider>
           <TanstackQueryProvider>
-            <RainbowKitProvider>{children}</RainbowKitProvider>
+            <RainbowKitProvider>
+              <ToastProvider>
+                {children}
+                <ToastContainer />
+              </ToastProvider>
+            </RainbowKitProvider>
           </TanstackQueryProvider>
         </WagmiProvider>
       </body>

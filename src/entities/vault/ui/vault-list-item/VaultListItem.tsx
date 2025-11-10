@@ -1,7 +1,7 @@
 "use client";
 
 import { VaultEntity } from "@/entities/vault/types";
-import { useWalletConnection } from "@/shared/hooks";
+import { useToast, useWalletConnection } from "@/shared/hooks";
 import { NetworkIcon } from "@/shared/ui/icons/network";
 import { useRouter } from "next/navigation";
 
@@ -11,12 +11,16 @@ interface VaultListItemProps {
 
 export const VaultListItem = ({ vault }: VaultListItemProps) => {
   const { isConnected } = useWalletConnection();
+  const { showToast } = useToast();
   const router = useRouter();
 
   const handleClick = (e: React.MouseEvent) => {
     if (!isConnected) {
       e.preventDefault();
-      alert("Please connect your wallet first to access the vault.");
+      showToast(
+        "Please connect your wallet first to access the vault.",
+        "WARNING"
+      );
       return;
     }
     router.push(`/vault/${vault.id}`);

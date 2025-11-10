@@ -17,7 +17,7 @@ export function WalletConnectionModal({
   onClose,
 }: WalletConnectionModalProps) {
   const { connectWallet, isPending, connectors } = useWalletConnection(onClose);
-  const { isConnected } = useAccount();
+  const { isConnected, address, connector } = useAccount();
   const { shouldRender } = useWalletModalState(isOpen, onClose, isPending);
 
   if (!shouldRender) return null;
@@ -44,7 +44,20 @@ export function WalletConnectionModal({
       {/* Content */}
       {isConnected ? (
         <div className="space-y-4">
-          <p className="text-[#C2C8C2] text-center">Connected to your wallet</p>
+          <div className="bg-[#1A1D1A] rounded-lg p-4 space-y-3">
+            <div className="space-y-1">
+              <p className="text-xs text-[#8C938C]">Wallet</p>
+              <p className="text-[#ECEFEC] font-semibold">
+                {connector?.name || "Unknown"}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs text-[#8C938C]">Address</p>
+              <p className="text-[#ECEFEC] font-mono text-sm break-all">
+                {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ""}
+              </p>
+            </div>
+          </div>
           <DisconnectButton onClick={onClose}>Disconnect</DisconnectButton>
         </div>
       ) : (

@@ -1,5 +1,7 @@
 "use client";
 
+import { ERC20_QUERY_KEYS } from "@/entities/erc20/constants";
+import { VAULT_QUERY_KEYS } from "@/entities/vault/constants";
 import { VaultBase } from "@/entities/vault/types";
 import { useTokenBalance, useTokenUsdPrice } from "@/features/erc20/hooks";
 import { ERC20Service } from "@/features/erc20/services";
@@ -21,6 +23,7 @@ import {
 } from "@/shared/libs";
 import { NetworkIcon } from "@/shared/ui/icons/network";
 import { NumberPad } from "@/shared/ui/number-pad";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { waitForTransactionReceipt } from "wagmi/actions";
 
@@ -29,6 +32,7 @@ interface SupplyFormProps {
 }
 
 export const SupplyForm = ({ vault }: SupplyFormProps) => {
+  const queryClient = useQueryClient();
   const { balance: tokenBalance, refetchBalance: refetchTokenBalance } =
     useTokenBalance(vault.tokenAddress, vault.decimals);
   const { price: tokenPrice } = useTokenUsdPrice(vault.coinGeckoId);
@@ -36,6 +40,12 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
   const { balance: vaultBalance, refetchBalance: refetchVaultBalance } =
     useVaultBalance(vault.vaultAddress, vault.decimals, address);
   const { showToast } = useToast();
+
+  const invalidateBalances = async () => {
+    console.log("[SupplyForm] Refetching balances...");
+    await Promise.all([refetchTokenBalance(), refetchVaultBalance()]);
+    console.log("[SupplyForm] Balances refetched successfully");
+  };
 
   const [isApproving, setIsApproving] = useState(false);
   const [isDepositing, setIsDepositing] = useState(false);
@@ -61,13 +71,20 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
     currentStep,
   } = useSequentialTransactions({
     onSuccess: () => {
+      console.log("[SupplyForm] Transaction successful!");
       showToast(`${amount} ${vault.symbol} Supply completed!`, "SUCCESS");
       handleClear();
-      refetchTokenBalance();
-      refetchVaultBalance();
+      // Refetch all related queries after successful transaction
+      setTimeout(async () => {
+        await invalidateBalances();
+      }, 2000);
     },
     onError: (error) => {
-      showToast("Fail Transaction: " + error.message, "ERROR");
+      console.error("[SupplyForm] Transaction failed:", error);
+      showToast("Fail Transaction: " + error.message, "ERROR", {
+        duration: 10000,
+        action: createRetryAction(handleApproveAndDeposit),
+      });
     },
   });
 
@@ -166,8 +183,18 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
           { duration: 8000 }
         );
         handleClear();
-        refetchTokenBalance();
-        refetchVaultBalance();
+        queryClient.invalidateQueries({
+          queryKey: ERC20_QUERY_KEYS.userTokenBalance(
+            vault.tokenAddress,
+            address
+          ),
+        });
+        queryClient.invalidateQueries({
+          queryKey: VAULT_QUERY_KEYS.userVaultBalance(
+            vault.vaultAddress,
+            address
+          ),
+        });
       } else {
         const revertReason =
           (receipt as unknown as { revertReason: string }).revertReason ||
@@ -208,7 +235,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
           vault.tokenAddress,
           vault.vaultAddress,
           amount,
-          vault.decimals + 99
+          vault.decimals
         );
       },
       async () => {

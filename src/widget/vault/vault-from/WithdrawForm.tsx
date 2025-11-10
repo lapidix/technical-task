@@ -35,6 +35,12 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
   const { balance: vaultBalance, refetchBalance: refetchVaultBalance } =
     useVaultBalance(vault.vaultAddress, vault.decimals, address);
 
+  const invalidateBalances = async () => {
+    console.log("[WithdrawForm] Refetching vault balance...");
+    await refetchVaultBalance();
+    console.log("[WithdrawForm] Vault balance refetched successfully");
+  };
+
   const {
     amount,
     showNumberPad,
@@ -87,7 +93,10 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
           { duration: 8000 }
         );
         handleClear();
-        refetchVaultBalance();
+        // Refetch all related queries after successful transaction
+        setTimeout(async () => {
+          await invalidateBalances();
+        }, 2000);
       } else {
         // Transaction was sent but reverted
         const revertReason =

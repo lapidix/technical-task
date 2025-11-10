@@ -13,8 +13,9 @@ export const useMainOverViewData = (address?: `0x${string}`) => {
       {
         queryKey: VAULT_QUERY_KEYS.allVaultTotalSupply,
         queryFn: VaultService.getAllVaultTotalSupply,
-        staleTime: 60000,
+        staleTime: 10000,
         refetchInterval: 60000,
+        refetchOnWindowFocus: true,
       },
       {
         queryKey: VAULT_QUERY_KEYS.myTotalSupply(address),
@@ -22,7 +23,8 @@ export const useMainOverViewData = (address?: `0x${string}`) => {
           if (!address) return 0;
           return VaultService.getMyTotalSupply(address);
         },
-        staleTime: 30000,
+        staleTime: 0, // Always refetch when stale
+        refetchOnWindowFocus: true,
       },
       {
         queryKey: VAULT_QUERY_KEYS.myTotalAPY(address),
@@ -30,7 +32,8 @@ export const useMainOverViewData = (address?: `0x${string}`) => {
           if (!address) return 0;
           return VaultService.getMyTotalAPY(address);
         },
-        staleTime: 30000,
+        staleTime: 0, // Always refetch when stale
+        refetchOnWindowFocus: true,
       },
       {
         queryKey: VAULT_QUERY_KEYS.myVaultsCount(address),
@@ -38,7 +41,8 @@ export const useMainOverViewData = (address?: `0x${string}`) => {
           if (!address) return 0;
           return VaultService.getMyVaultsCount(address);
         },
-        staleTime: 30000,
+        staleTime: 0, // Always refetch when stale
+        refetchOnWindowFocus: true,
       },
     ],
   });

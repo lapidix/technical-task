@@ -1,7 +1,10 @@
 "use client";
 
+import { ERC20_QUERY_KEYS } from "@/entities/erc20/constants";
 import { SUPPORTED_VAULTS } from "@/entities/vault/constants";
 import { useFaucet, useTokenBalance } from "@/features/erc20/hooks";
+import { useWalletConnection } from "@/shared/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import { Suspense, useState } from "react";
 import {
   AmountInput,
@@ -13,6 +16,8 @@ import {
 } from "./components";
 
 export const FaucetRequestForm = () => {
+  const queryClient = useQueryClient();
+  const { address } = useWalletConnection();
   const [selectedToken, setSelectedToken] = useState(SUPPORTED_VAULTS[0]);
   const [amount, setAmount] = useState("100");
 
@@ -20,6 +25,17 @@ export const FaucetRequestForm = () => {
     selectedToken.tokenAddress,
     selectedToken.decimals
   );
+
+  const invalidateTokenBalance = async () => {
+    console.log("[FaucetForm] Refetching token balance...");
+    await queryClient.refetchQueries({
+      queryKey: ERC20_QUERY_KEYS.userTokenBalance(
+        selectedToken.tokenAddress,
+        address
+      ),
+    });
+    console.log("[FaucetForm] Token balance refetched successfully");
+  };
 
   const { requestTokens, isPending, isConfirming, isSuccess, hash } = useFaucet(
     selectedToken.tokenAddress
@@ -65,7 +81,7 @@ export const FaucetRequestForm = () => {
       <TransactionStatus
         isSuccess={isSuccess}
         hash={hash}
-        onRefreshBalance={refetchBalance}
+        onRefreshBalance={invalidateTokenBalance}
       />
 
       <Suspense key={selectedToken.id} fallback={<TokenInformationSkeleton />}>

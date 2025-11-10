@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 interface TransactionStatusProps {
   isSuccess: boolean;
   error?: Error | null;
@@ -11,6 +13,15 @@ export const TransactionStatus = ({
   hash,
   onRefreshBalance,
 }: TransactionStatusProps) => {
+  // Auto-refresh balance when transaction succeeds
+  useEffect(() => {
+    if (isSuccess && hash) {
+      // Add delay to ensure blockchain state is updated
+      setTimeout(() => {
+        onRefreshBalance();
+      }, 2000);
+    }
+  }, [isSuccess, hash, onRefreshBalance]);
   if (error) {
     return (
       <div className="bg-red-500/10 border border-red-500 rounded-lg p-4">
