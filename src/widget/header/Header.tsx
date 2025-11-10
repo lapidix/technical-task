@@ -24,6 +24,11 @@ export function Header() {
     isSwitching,
   } = useNetworkValidation(baseSepolia);
 
+  const handleRefresh = () => {
+    // router.refresh();
+    window.location.reload();
+  };
+
   return (
     <Fragment>
       <header className="sticky top-0 z-50 bg-black text-white py-4 min-h-16 px-4">
@@ -35,13 +40,18 @@ export function Header() {
 
           {/* Right side - Connect button or Account info */}
           <div className="flex-1 flex items-center justify-end gap-1.5">
-            <Link className="" href="/faucet">
+            <Link
+              className="text-[#ECEFEC] hover:text-[#E6F5AA] transition-colors"
+              href="/faucet">
               Faucet
             </Link>
 
-            <RefreshIcon className="w-6 h-6 cursor-pointer text-accent" />
+            <RefreshIcon
+              onClick={handleRefresh}
+              className={`w-6 h-6 cursor-pointer text-accent transition-transform duration-500 hover:rotate-180`}
+            />
             <WalletConnectionButton onOpenModal={() => setIsModalOpen(true)} />
-            <MenuIcon className="w-6 h-6 cursor-pointer text-gray-50" />
+            <MenuIcon className="w-6 h-6 cursor-pointer text-[#ECEFEC] hover:text-[#E6F5AA] transition-colors" />
           </div>
         </div>
       </header>

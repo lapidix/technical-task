@@ -25,7 +25,7 @@ export const VaultListItem = ({ vault }: VaultListItemProps) => {
   return (
     <div
       onClick={handleClick}
-      className="flex items-center justify-between py-1.5 px-2 mb-4 hover:bg-gray-900/50 transition-colors cursor-pointer rounded-xl">
+      className="flex items-center justify-between py-1.5 px-2 mb-4 hover:bg-[#1A1D1A] transition-colors cursor-pointer rounded-xl">
       <div className="flex items-center gap-4">
         <div className="w-6 h-6 flex items-center justify-center">
           <NetworkIcon icon={vault.icon} />

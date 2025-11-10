@@ -6,4 +6,3 @@ export {
 } from "./token-information";
 export { TokenSelector, TokenSelectorSkeleton } from "./token-selector";
 export { TransactionStatus } from "./transaction-status";
-export { WalletNotConnected } from "./wallet-not-connected";

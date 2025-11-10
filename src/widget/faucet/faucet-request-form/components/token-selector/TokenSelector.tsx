@@ -12,8 +12,8 @@ export const TokenSelector = ({
   onSelect,
 }: TokenSelectorProps) => {
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-400 mb-3">
+    <div className="px-2 py-2">
+      <label className="block text-sm font-medium text-[#8C938C] mb-3">
         Select Token
       </label>
       <div className="grid grid-cols-3 gap-3">
@@ -21,15 +21,15 @@ export const TokenSelector = ({
           <button
             key={vault.id}
             onClick={() => onSelect(vault)}
-            className={`p-4 rounded-lg border-2 transition-all ${
+            className={`p-4 rounded-lg border transition-all ${
               selectedToken.id === vault.id
-                ? "border-blue-500 bg-blue-500/10"
-                : "border-gray-700 bg-gray-800 hover:border-gray-600"
+                ? "border-[#E6F5AA] bg-[#E6F5AA]/10"
+                : "border-[#3A3D3A] bg-[#3A3D3A]/30 hover:bg-[#3A3D3A]/50"
             }`}>
             <div className="mb-2 flex justify-center">
               <NetworkIcon icon={vault.icon} />
             </div>
-            <div className="text-white font-semibold">{vault.symbol}</div>
+            <div className="text-[#ECEFEC] font-medium">{vault.symbol}</div>
           </button>
         ))}
       </div>

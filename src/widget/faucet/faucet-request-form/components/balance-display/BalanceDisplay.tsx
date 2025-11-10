@@ -5,17 +5,17 @@ interface BalanceDisplayProps {
 
 export const BalanceDisplay = ({ symbol, balance }: BalanceDisplayProps) => {
   return (
-    <div className="bg-gray-800 rounded-lg p-4">
-      <div className="flex justify-between items-center">
-        <span className="text-sm text-gray-400">Current {symbol} Balance</span>
-        <div className="flex items-center gap-2">
-          <>
-            <span className="text-2xl font-bold text-white">
-              {balance ? (Number(balance) / 1e18).toFixed(2) : "0.00"}
-            </span>
-            <span className="text-gray-400">{symbol}</span>
-          </>
-        </div>
+    <div className="px-2 py-2">
+      <div className="text-[#8C938C] font-medium text-sm mb-1">
+        Current {symbol} Balance
+      </div>
+      <div className="flex items-center gap-2">
+        <span
+          className="text-2xl font-medium text-[#ECEFEC]"
+          suppressHydrationWarning>
+          {balance ? balance.toLocaleString() : "0.00"}
+        </span>
+        <span className="text-xl text-[#8C938C]">{symbol}</span>
       </div>
     </div>
   );

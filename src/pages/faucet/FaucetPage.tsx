@@ -1,17 +1,9 @@
 "use client";
 
-import { useWalletConnection } from "@/shared/hooks";
-import {
-  FaucetRequestForm,
-  FaucetRequestFormSkeleton,
-} from "@/widget/faucet/faucet-request-form";
-import { WalletNotConnected } from "@/widget/faucet/faucet-request-form/components";
+import { FaucetRequestForm } from "@/widget/faucet/faucet-request-form";
 import { Header } from "@/widget/header";
-import { Suspense } from "react";
 
 export const FaucetPage = () => {
-  const { isConnected } = useWalletConnection();
-
   return (
     <div className="min-h-screen bg-black">
       <Header />
@@ -23,13 +15,7 @@ export const FaucetPage = () => {
           </p>
         </div>
 
-        {!isConnected ? (
-          <WalletNotConnected />
-        ) : (
-          <Suspense fallback={<FaucetRequestFormSkeleton />}>
-            <FaucetRequestForm />
-          </Suspense>
-        )}
+        <FaucetRequestForm />
       </main>
     </div>
   );
