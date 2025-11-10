@@ -1,6 +1,10 @@
 import { ENV } from "../config";
 import { BaseApiClient } from "./api.libs";
 
+export {
+  formatReceiptRevertedMessage,
+  formatTransactionErrorMessage,
+} from "./error-formatter.libs";
 export { formatAmount, formatCompactNumber } from "./format.libs";
 export { tcm } from "./styles.libs";
 export const coinGeckoApiClient = new BaseApiClient({

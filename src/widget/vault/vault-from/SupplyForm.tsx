@@ -5,16 +5,24 @@ import { useTokenBalance, useTokenUsdPrice } from "@/features/erc20/hooks";
 import { ERC20Service } from "@/features/erc20/services";
 import { useVaultBalance } from "@/features/vault/hooks";
 import { VaultService } from "@/features/vault/services";
+import { wagmiConfig } from "@/shared/config/wagmi.config";
 import {
+  createRetryAction,
   useNumberPad,
   useSequentialTransactions,
+  useToast,
   useWalletConnection,
 } from "@/shared/hooks";
-import { useToast } from "@/shared/hooks/useToast";
-import { formatAmount, formatCompactNumber } from "@/shared/libs";
+import {
+  formatAmount,
+  formatCompactNumber,
+  formatReceiptRevertedMessage,
+  formatTransactionErrorMessage,
+} from "@/shared/libs";
 import { NetworkIcon } from "@/shared/ui/icons/network";
 import { NumberPad } from "@/shared/ui/number-pad";
 import { useState } from "react";
+import { waitForTransactionReceipt } from "wagmi/actions";
 
 interface SupplyFormProps {
   vault: VaultBase;
@@ -92,29 +100,36 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
         vault.decimals
       );
 
-      const { waitForTransactionReceipt } = await import("wagmi/actions");
-      const { wagmiConfig } = await import("@/shared/config/wagmi.config");
-
       const receipt = await waitForTransactionReceipt(wagmiConfig, {
         hash,
+        confirmations: 1,
+        pollingInterval: 1000,
+        timeout: 60_000,
       });
 
       if (receipt.status === "success") {
-        showToast("Approve Success!", "SUCCESS");
+        showToast(`✅ Approve Success!\n\n🔗 Tx Hash:\n${hash}`, "SUCCESS", {
+          duration: 8000,
+        });
       } else {
-        showToast("Transaction reverted!", "ERROR");
+        const revertReason =
+          (receipt as unknown as { revertReason: string }).revertReason ||
+          "Unknown reason";
+
+        const errorMessage = formatReceiptRevertedMessage(hash, revertReason);
+
+        showToast(errorMessage, "ERROR", {
+          duration: 12000,
+          action: createRetryAction(handleApprove),
+        });
       }
     } catch (error) {
-      console.error("Approve error:", error);
+      const errorMessage = formatTransactionErrorMessage(error, hash);
 
-      if (hash) {
-        showToast(
-          "Transaction failed!\n\nThe transaction was reverted by the contract.",
-          "ERROR"
-        );
-      } else {
-        showToast("Transaction rejected: " + (error as Error).message, "ERROR");
-      }
+      showToast(errorMessage, "ERROR", {
+        duration: 10000,
+        action: createRetryAction(handleApprove),
+      });
     } finally {
       setIsApproving(false);
     }
@@ -137,32 +152,45 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
         address
       );
 
-      const { waitForTransactionReceipt } = await import("wagmi/actions");
-      const { wagmiConfig } = await import("@/shared/config/wagmi.config");
-
       const receipt = await waitForTransactionReceipt(wagmiConfig, {
         hash,
+        confirmations: 1,
+        pollingInterval: 1000,
+        timeout: 60_000,
       });
 
       if (receipt.status === "success") {
-        showToast(`${amount} ${vault.symbol} Deposit Success!`, "SUCCESS");
+        showToast(
+          `✅ ${amount} ${vault.symbol} Deposit Success!\n\n🔗 Tx Hash:\n${hash}`,
+          "SUCCESS",
+          { duration: 8000 }
+        );
         handleClear();
         refetchTokenBalance();
         refetchVaultBalance();
       } else {
-        showToast("Transaction reverted!", "ERROR");
+        const revertReason =
+          (receipt as unknown as { revertReason: string }).revertReason ||
+          "Unknown reason";
+
+        const errorMessage = formatReceiptRevertedMessage(hash, revertReason, {
+          amount,
+          symbol: vault.symbol,
+          balance: Number(tokenBalance),
+        });
+
+        showToast(errorMessage, "ERROR", {
+          duration: 12000,
+          action: createRetryAction(handleDeposit),
+        });
       }
     } catch (error) {
-      console.error("Deposit error:", error);
+      const errorMessage = formatTransactionErrorMessage(error, hash);
 
-      if (hash) {
-        showToast(
-          "Transaction failed!\n\nThe transaction was reverted by the contract.\nThis might happen if:\n- Insufficient allowance\n- Insufficient balance\n- Contract restrictions",
-          "ERROR"
-        );
-      } else {
-        showToast("Transaction rejected: " + (error as Error).message, "ERROR");
-      }
+      showToast(errorMessage, "ERROR", {
+        duration: 10000,
+        action: createRetryAction(handleDeposit),
+      });
     } finally {
       setIsDepositing(false);
     }
@@ -180,7 +208,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
           vault.tokenAddress,
           vault.vaultAddress,
           amount,
-          vault.decimals
+          vault.decimals + 99
         );
       },
       async () => {

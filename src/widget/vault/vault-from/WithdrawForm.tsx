@@ -4,25 +4,36 @@ import { VaultBase } from "@/entities/vault/types";
 import { useTokenUsdPrice } from "@/features/erc20/hooks";
 import { useVaultBalance } from "@/features/vault/hooks";
 import { VaultService } from "@/features/vault/services";
-import { useNumberPad, useWalletConnection } from "@/shared/hooks";
-import { useToast } from "@/shared/hooks/useToast";
-import { formatAmount, formatCompactNumber } from "@/shared/libs";
+import { wagmiConfig } from "@/shared/config/wagmi.config";
+import {
+  createRetryAction,
+  useNumberPad,
+  useToast,
+  useWalletConnection,
+} from "@/shared/hooks";
+import {
+  formatAmount,
+  formatCompactNumber,
+  formatReceiptRevertedMessage,
+  formatTransactionErrorMessage,
+} from "@/shared/libs";
 import { NetworkIcon } from "@/shared/ui/icons/network";
 import { NumberPad } from "@/shared/ui/number-pad";
 import { useState } from "react";
+import { waitForTransactionReceipt } from "wagmi/actions";
 
 interface WithdrawFormProps {
   vault: VaultBase;
 }
 
 export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
+  const { showToast } = useToast();
+
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
   const { price: tokenPrice } = useTokenUsdPrice(vault.coinGeckoId);
   const { address } = useWalletConnection();
   const { balance: vaultBalance, refetchBalance: refetchVaultBalance } =
     useVaultBalance(vault.vaultAddress, vault.decimals, address);
-  const { showToast } = useToast();
-
-  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   const {
     amount,
@@ -57,14 +68,11 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
       hash = await VaultService.withdrawFromVault(
         vault.vaultAddress,
         amount,
-        vault.decimals,
+        vault.decimals + 9,
         address
       );
 
       // 트랜잭션 confirm 대기
-      const { waitForTransactionReceipt } = await import("wagmi/actions");
-      const { wagmiConfig } = await import("@/shared/config/wagmi.config");
-
       const receipt = await waitForTransactionReceipt(wagmiConfig, {
         hash,
         confirmations: 1,
@@ -73,19 +81,37 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
       });
 
       if (receipt.status === "success") {
-        showToast(`${amount} ${vault.symbol} Withdraw Success!`, "SUCCESS");
+        showToast(
+          `✅ ${amount} ${vault.symbol} Withdraw Success!\n\n🔗 Tx Hash:\n${hash}`,
+          "SUCCESS",
+          { duration: 8000 }
+        );
         handleClear();
         refetchVaultBalance();
       } else {
-        showToast("Transaction reverted!", "ERROR");
+        // Transaction was sent but reverted
+        const revertReason =
+          (receipt as unknown as { revertReason: string }).revertReason ||
+          "Unknown reason";
+
+        const errorMessage = formatReceiptRevertedMessage(hash, revertReason, {
+          amount,
+          symbol: vault.symbol,
+          balance: vaultBalance,
+        });
+
+        showToast(errorMessage, "ERROR", {
+          duration: 12000,
+          action: createRetryAction(handleWithdraw),
+        });
       }
     } catch (error) {
-      const errorMsg =
-        (error as { shortMessage?: string })?.shortMessage ||
-        (error as { shortMessage?: string; message?: string })?.message ||
-        "Unknown error";
-      const prefix = hash ? "Transaction failed" : "Transaction rejected";
-      showToast(`${prefix}: ${errorMsg}`, "ERROR");
+      const errorMessage = formatTransactionErrorMessage(error, hash);
+
+      showToast(errorMessage, "ERROR", {
+        duration: 10000,
+        action: createRetryAction(handleWithdraw),
+      });
     } finally {
       setIsWithdrawing(false);
     }

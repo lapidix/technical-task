@@ -8,3 +8,13 @@ export const useToast = () => {
   }
   return context;
 };
+
+export const createRetryAction = (onRetry: () => void) => ({
+  label: "🔄 Retry",
+  onClick: onRetry,
+});
+
+export const createToastAction = (label: string, onClick: () => void) => ({
+  label,
+  onClick,
+});

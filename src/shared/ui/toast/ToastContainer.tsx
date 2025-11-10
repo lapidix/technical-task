@@ -17,6 +17,8 @@ export const ToastContainer = () => {
           message={toast.message}
           type={toast.type}
           onClose={hideToast}
+          duration={toast.duration}
+          action={toast.action}
         />
       ))}
     </div>

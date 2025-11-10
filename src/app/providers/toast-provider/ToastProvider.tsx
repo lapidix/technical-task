@@ -7,9 +7,28 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const showToast = useCallback(
-    (message: string, type: ToastMessage["type"] = "INFO") => {
+    (
+      message: string,
+      type: ToastMessage["type"] = "INFO",
+      options?: {
+        duration?: number;
+        action?: {
+          label: string;
+          onClick: () => void;
+        };
+      }
+    ) => {
       const id = Date.now().toString();
-      setToasts((prev) => [...prev, { id, message, type }]);
+      setToasts((prev) => [
+        ...prev,
+        {
+          id,
+          message,
+          type,
+          duration: options?.duration,
+          action: options?.action,
+        },
+      ]);
     },
     []
   );

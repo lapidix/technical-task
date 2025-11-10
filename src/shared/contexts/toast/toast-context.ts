@@ -7,11 +7,26 @@ export interface ToastMessage {
   id: string;
   message: string;
   type: ToastType;
+  duration?: number;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
 }
 
 export interface ToastContextType {
   toasts: ToastMessage[];
-  showToast: (message: string, type?: ToastMessage["type"]) => void;
+  showToast: (
+    message: string,
+    type?: ToastMessage["type"],
+    options?: {
+      duration?: number;
+      action?: {
+        label: string;
+        onClick: () => void;
+      };
+    }
+  ) => void;
   hideToast: (id: string) => void;
 }
 
