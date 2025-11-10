@@ -16,7 +16,7 @@ export function WalletConnectionButton({
 
   // Show skeleton while checking wallet connection
   if (isLoading) {
-    return <ButtonSkeleton width="120px" />;
+    return <ButtonSkeleton />;
   }
 
   if (!isConnected) {

@@ -42,6 +42,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
     NUMBER_PAD_HEIGHT,
   } = useNumberPad({
     disabled: isApproving || isDepositing,
+    maxAmount: Number(tokenBalance),
   });
 
   const {

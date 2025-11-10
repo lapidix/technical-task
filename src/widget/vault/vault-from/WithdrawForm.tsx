@@ -34,6 +34,7 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
     NUMBER_PAD_HEIGHT,
   } = useNumberPad({
     disabled: isWithdrawing,
+    maxAmount: Number(vaultBalance),
   });
 
   const handleUseMax = () => {

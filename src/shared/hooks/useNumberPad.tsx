@@ -2,10 +2,11 @@ import { useRef, useState } from "react";
 
 interface UseNumberPadOptions {
   disabled?: boolean;
+  maxAmount?: number;
 }
 
 export const useNumberPad = (options?: UseNumberPadOptions) => {
-  const { disabled = false } = options || {};
+  const { disabled = false, maxAmount } = options || {};
   const [amount, setAmount] = useState("0");
   const [showNumberPad, setShowNumberPad] = useState(false);
   const isOpeningRef = useRef(false);
@@ -21,6 +22,10 @@ export const useNumberPad = (options?: UseNumberPadOptions) => {
       }
     } else {
       const newAmount = amount === "0" ? num : amount + num;
+      // Check if new amount exceeds max
+      if (maxAmount !== undefined && parseFloat(newAmount) > maxAmount) {
+        return;
+      }
       setAmount(newAmount);
     }
   };
@@ -36,6 +41,11 @@ export const useNumberPad = (options?: UseNumberPadOptions) => {
   };
 
   const handleSetAmount = (value: string) => {
+    // Check if value exceeds max
+    if (maxAmount !== undefined && parseFloat(value) > maxAmount) {
+      setAmount(maxAmount.toString());
+      return;
+    }
     setAmount(value);
   };
 
