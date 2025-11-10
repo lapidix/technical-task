@@ -35,7 +35,7 @@ export function Header() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/">
-            <LogoIcon className="w-10 h-10 text-white cursor-pointer" />
+            <LogoIcon className="w-10 h-10 text-[#ECEFEC] hover:text-[#E6F5AA] cursor-pointer transition-all duration-300 hover:scale-110" />
           </Link>
 
           {/* Right side - Connect button or Account info */}
@@ -51,7 +51,7 @@ export function Header() {
               className={`w-6 h-6 cursor-pointer text-accent transition-transform duration-500 hover:rotate-180`}
             />
             <WalletConnectionButton onOpenModal={() => setIsModalOpen(true)} />
-            <MenuIcon className="w-6 h-6 cursor-pointer text-[#ECEFEC] hover:text-[#E6F5AA] transition-colors" />
+            <MenuIcon className="w-6 h-6 cursor-pointer text-[#ECEFEC] hover:text-[#E6F5AA] transition-all duration-300 hover:scale-110" />
           </div>
         </div>
       </header>

@@ -5,23 +5,43 @@ import { useWalletConnection } from "./useWalletConnection";
 export function useRequireWallet() {
   const router = useRouter();
   const { isConnected, isLoading, status, mounted } = useWalletConnection();
-  const hasCheckedConnection = useRef(false);
+  const hasRedirected = useRef(false);
+  const renderCount = useRef(0);
+  const hasSeenConnected = useRef(false);
+
+  renderCount.current++;
 
   useEffect(() => {
-    if (status === "connecting" || status === "reconnecting" || isConnected) {
-      hasCheckedConnection.current = true;
+    if (isConnected || status === "connected") {
+      hasSeenConnected.current = true;
     }
 
+    if (hasRedirected.current) return;
+
+    if (!mounted || isLoading) return;
+
+    if (status === "connecting" || status === "reconnecting") return;
+
     if (
-      mounted &&
-      !isLoading &&
-      !isConnected &&
       status === "disconnected" &&
-      hasCheckedConnection.current
+      !isConnected &&
+      !hasSeenConnected.current
     ) {
+      const timeoutId = setTimeout(() => {
+        if (!hasSeenConnected.current && !hasRedirected.current) {
+          hasRedirected.current = true;
+          router.push("/");
+        }
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
+    }
+
+    if (status === "disconnected" && !isConnected && hasSeenConnected.current) {
+      hasRedirected.current = true;
       router.push("/");
     }
-  }, [mounted, isConnected, isLoading, status, router]);
+  }, [mounted, isLoading, isConnected, status, router]);
 
   return { isConnected, isLoading };
 }

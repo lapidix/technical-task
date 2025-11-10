@@ -1,7 +1,9 @@
 "use client";
 
+import { ToastProvider } from "@/app/providers/toast-provider";
 import { useRequireWallet } from "@/shared/hooks";
 import { Spinner } from "@/shared/ui/spinner";
+import { ToastContainer } from "@/shared/ui/toast";
 import { ReactNode } from "react";
 
 interface WalletLayoutProps {
@@ -23,5 +25,10 @@ export function WalletLayout({ children }: WalletLayoutProps) {
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <ToastProvider>
+      {children}
+      <ToastContainer />
+    </ToastProvider>
+  );
 }

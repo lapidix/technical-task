@@ -5,6 +5,7 @@ import { useTokenUsdPrice } from "@/features/erc20/hooks";
 import { useVaultBalance } from "@/features/vault/hooks";
 import { VaultService } from "@/features/vault/services";
 import { useNumberPad, useWalletConnection } from "@/shared/hooks";
+import { useToast } from "@/shared/hooks/useToast";
 import { formatAmount, formatCompactNumber } from "@/shared/libs";
 import { NetworkIcon } from "@/shared/ui/icons/network";
 import { NumberPad } from "@/shared/ui/number-pad";
@@ -19,6 +20,7 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
   const { address } = useWalletConnection();
   const { balance: vaultBalance, refetchBalance: refetchVaultBalance } =
     useVaultBalance(vault.vaultAddress, vault.decimals, address);
+  const { showToast } = useToast();
 
   const [isWithdrawing, setIsWithdrawing] = useState(false);
 
@@ -44,7 +46,7 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
 
   const handleWithdraw = async () => {
     if (!address) {
-      alert("Please connect wallet.");
+      showToast("Please connect wallet.", "WARNING");
       return;
     }
 
@@ -71,19 +73,19 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
       });
 
       if (receipt.status === "success") {
-        alert(`✅ ${amount} ${vault.symbol} Withdraw Success!`);
+        showToast(`${amount} ${vault.symbol} Withdraw Success!`, "SUCCESS");
         handleClear();
         refetchVaultBalance();
       } else {
-        alert(`❌ Transaction reverted!`);
+        showToast("Transaction reverted!", "ERROR");
       }
     } catch (error) {
       const errorMsg =
-        (error as { shortMessage?: string; message?: string })?.shortMessage ||
+        (error as { shortMessage?: string })?.shortMessage ||
         (error as { shortMessage?: string; message?: string })?.message ||
         "Unknown error";
       const prefix = hash ? "Transaction failed" : "Transaction rejected";
-      alert(`❌ ${prefix}: ${errorMsg}`);
+      showToast(`${prefix}: ${errorMsg}`, "ERROR");
     } finally {
       setIsWithdrawing(false);
     }

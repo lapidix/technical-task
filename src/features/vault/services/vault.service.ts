@@ -181,7 +181,6 @@ export class VaultService {
     });
 
     const balanceString = formatUnits(balance, decimals);
-    console.log("balanceString VaultService", balance);
     return Number(balanceString);
   }
 
@@ -235,7 +234,6 @@ export class VaultService {
     });
     const aprBps = Number(apr[0].result) / 10000;
     const apy = Math.pow(1 + aprBps / 365, 365) - 1;
-    console.log("apy in Service", apy);
     return apy;
   }
 

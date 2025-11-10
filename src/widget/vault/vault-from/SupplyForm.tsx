@@ -10,6 +10,7 @@ import {
   useSequentialTransactions,
   useWalletConnection,
 } from "@/shared/hooks";
+import { useToast } from "@/shared/hooks/useToast";
 import { formatAmount, formatCompactNumber } from "@/shared/libs";
 import { NetworkIcon } from "@/shared/ui/icons/network";
 import { NumberPad } from "@/shared/ui/number-pad";
@@ -26,6 +27,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
   const { address } = useWalletConnection();
   const { balance: vaultBalance, refetchBalance: refetchVaultBalance } =
     useVaultBalance(vault.vaultAddress, vault.decimals, address);
+  const { showToast } = useToast();
 
   const [isApproving, setIsApproving] = useState(false);
   const [isDepositing, setIsDepositing] = useState(false);
@@ -51,13 +53,13 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
     currentStep,
   } = useSequentialTransactions({
     onSuccess: () => {
-      alert(`✅ ${amount} ${vault.symbol} Supply completed!`);
+      showToast(`${amount} ${vault.symbol} Supply completed!`, "SUCCESS");
       handleClear();
       refetchTokenBalance();
       refetchVaultBalance();
     },
     onError: (error) => {
-      alert("❌ Fail Transaction: " + error.message);
+      showToast("Fail Transaction: " + error.message, "ERROR");
     },
   });
 
@@ -75,7 +77,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
 
   const handleApprove = async () => {
     if (!address) {
-      alert("Please connect wallet.");
+      showToast("Please connect wallet.", "WARNING");
       return;
     }
 
@@ -98,19 +100,20 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
       });
 
       if (receipt.status === "success") {
-        alert("✅ Approve Success!");
+        showToast("Approve Success!", "SUCCESS");
       } else {
-        alert(`❌ Transaction reverted!`);
+        showToast("Transaction reverted!", "ERROR");
       }
     } catch (error) {
       console.error("Approve error:", error);
 
       if (hash) {
-        alert(
-          `❌ Transaction failed!\n\nThe transaction was reverted by the contract.`
+        showToast(
+          "Transaction failed!\n\nThe transaction was reverted by the contract.",
+          "ERROR"
         );
       } else {
-        alert("❌ Transaction rejected: " + (error as Error).message);
+        showToast("Transaction rejected: " + (error as Error).message, "ERROR");
       }
     } finally {
       setIsApproving(false);
@@ -119,7 +122,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
 
   const handleDeposit = async () => {
     if (!address) {
-      alert("Please connect wallet.");
+      showToast("Please connect wallet.", "WARNING");
       return;
     }
 
@@ -142,22 +145,23 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
       });
 
       if (receipt.status === "success") {
-        alert(`✅ ${amount} ${vault.symbol} Deposit Success!`);
+        showToast(`${amount} ${vault.symbol} Deposit Success!`, "SUCCESS");
         handleClear();
         refetchTokenBalance();
         refetchVaultBalance();
       } else {
-        alert(`❌ Transaction reverted!`);
+        showToast("Transaction reverted!", "ERROR");
       }
     } catch (error) {
       console.error("Deposit error:", error);
 
       if (hash) {
-        alert(
-          `❌ Transaction failed!\n\nThe transaction was reverted by the contract.\nThis might happen if:\n- Insufficient allowance\n- Insufficient balance\n- Contract restrictions`
+        showToast(
+          "Transaction failed!\n\nThe transaction was reverted by the contract.\nThis might happen if:\n- Insufficient allowance\n- Insufficient balance\n- Contract restrictions",
+          "ERROR"
         );
       } else {
-        alert("❌ Transaction rejected: " + (error as Error).message);
+        showToast("Transaction rejected: " + (error as Error).message, "ERROR");
       }
     } finally {
       setIsDepositing(false);
@@ -166,7 +170,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
 
   const handleApproveAndDeposit = async () => {
     if (!address) {
-      alert("Please connect wallet.");
+      showToast("Please connect wallet.", "WARNING");
       return;
     }
 
