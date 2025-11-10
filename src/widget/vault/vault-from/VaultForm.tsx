@@ -1,4 +1,3 @@
-// VaultForm.tsx
 "use client";
 
 import { VaultBase } from "@/entities/vault/types";

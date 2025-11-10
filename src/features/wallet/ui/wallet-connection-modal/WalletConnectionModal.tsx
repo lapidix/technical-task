@@ -3,7 +3,7 @@
 import { SUPPORTED_WALLETS } from "@/entities/wallet/constants";
 import { DisconnectButton, WalletListItem } from "@/entities/wallet/ui";
 import { CloseIcon } from "@/shared/ui/icons/common";
-import { Modal } from "@/shared/ui/modal";
+import { BaseModal } from "@/shared/ui/modal";
 import { useAccount } from "wagmi";
 import { useWalletConnection, useWalletModalState } from "../../hooks";
 
@@ -27,7 +27,7 @@ export function WalletConnectionModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <BaseModal isOpen={isOpen} onClose={onClose}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-[#ECEFEC]">
@@ -67,6 +67,6 @@ export function WalletConnectionModal({
           By connecting, you agree to our Terms of Service
         </p>
       </div>
-    </Modal>
+    </BaseModal>
   );
 }

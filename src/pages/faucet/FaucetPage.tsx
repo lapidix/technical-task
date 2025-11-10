@@ -5,18 +5,12 @@ import {
   FaucetRequestForm,
   FaucetRequestFormSkeleton,
 } from "@/widget/faucet/faucet-request-form";
-import {
-  UnsupportedNetwork,
-  WalletNotConnected,
-} from "@/widget/faucet/faucet-request-form/components";
+import { WalletNotConnected } from "@/widget/faucet/faucet-request-form/components";
 import { Header } from "@/widget/header";
 import { Suspense } from "react";
-import { useAccount } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
 
 export const FaucetPage = () => {
   const { isConnected } = useWalletConnection();
-  const { chain } = useAccount();
 
   return (
     <div className="min-h-screen bg-black">
@@ -31,8 +25,6 @@ export const FaucetPage = () => {
 
         {!isConnected ? (
           <WalletNotConnected />
-        ) : chain?.id !== baseSepolia.id ? (
-          <UnsupportedNetwork />
         ) : (
           <Suspense fallback={<FaucetRequestFormSkeleton />}>
             <FaucetRequestForm />

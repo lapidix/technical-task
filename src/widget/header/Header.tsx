@@ -1,6 +1,8 @@
 "use client";
 
+import { useNetworkValidation } from "@/features/wallet/hooks";
 import {
+  NetworkSwitchModal,
   WalletConnectionButton,
   WalletConnectionModal,
 } from "@/features/wallet/ui";
@@ -8,9 +10,19 @@ import { MenuIcon, RefreshIcon } from "@/shared/ui/icons/common";
 import { LogoIcon } from "@/shared/ui/icons/common/LogoIcon";
 import Link from "next/link";
 import { Fragment, useState } from "react";
+import { baseSepolia } from "viem/chains";
 
 export function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const {
+    showModal,
+    currentChainId,
+    requiredChain,
+    handleSwitchNetwork,
+    handleCloseModal,
+    isSwitching,
+  } = useNetworkValidation(baseSepolia);
 
   return (
     <Fragment>
@@ -38,6 +50,16 @@ export function Header() {
       <WalletConnectionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+      />
+
+      {/* Network Switch Modal */}
+      <NetworkSwitchModal
+        isOpen={showModal}
+        onClose={handleCloseModal}
+        currentChainId={currentChainId}
+        requiredChain={requiredChain}
+        onSwitchNetwork={handleSwitchNetwork}
+        isPending={isSwitching}
       />
     </Fragment>
   );

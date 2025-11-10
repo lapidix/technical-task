@@ -1,12 +1,12 @@
 import { Backdrop } from "./Backdrop";
 
-interface ModalProps {
+interface BaseModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
 }
 
-export function Modal({ isOpen, onClose, children }: ModalProps) {
+export function BaseModal({ isOpen, onClose, children }: BaseModalProps) {
   if (!isOpen) return null;
 
   return (

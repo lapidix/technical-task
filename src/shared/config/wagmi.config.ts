@@ -14,3 +14,5 @@ export const wagmiConfig = createConfig({
     multicall: true,
   },
 });
+
+export type Config = typeof wagmiConfig;
