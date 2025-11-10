@@ -9,7 +9,7 @@ export const BottomNavigation = () => {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky bottom-0 left-0 right-0 bg-black border-t border-gray-800 z-50 pt-1 pb-2">
+    <nav className="max-w-7xl mx-auto w-full sticky bottom-0 left-0 right-0 bg-black border-t border-gray-800 z-50 pt-1 pb-2">
       <div className="w-full mx-auto px-4 relative">
         <div className="flex items-end justify-around pb-2">
           {BOTTOM_NAVIGATION_MENU.slice(0, 2).map((item) => (

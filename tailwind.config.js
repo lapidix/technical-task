@@ -17,6 +17,7 @@ module.exports = {
         "fade-in": "fadeIn 0.3s ease-in-out",
         "slide-up": "slideUp 0.3s ease-out",
         "slide-down": "slideDown 0.3s ease-in",
+        spin: "spin 1s linear infinite",
       },
       keyframes: {
         shimmer: {
@@ -34,6 +35,10 @@ module.exports = {
         slideDown: {
           "0%": { transform: "translateY(0)" },
           "100%": { transform: "translateY(100%)" },
+        },
+        spin: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
         },
       },
     },
