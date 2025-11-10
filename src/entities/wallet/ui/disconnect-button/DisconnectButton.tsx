@@ -10,8 +10,11 @@ export const DisconnectButton: React.FC<HTMLAttributes<HTMLButtonElement>> = ({
 }) => {
   const { disconnect } = useDisconnect();
   const handleDisconnect = (e: React.MouseEvent<HTMLButtonElement>) => {
-    disconnect();
-    onClick?.(e);
+    disconnect(undefined, {
+      onSuccess: () => {
+        onClick?.(e);
+      },
+    });
   };
   return (
     <button

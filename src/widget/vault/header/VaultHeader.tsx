@@ -27,6 +27,7 @@ export const VaultHeader = ({ currentVaultId }: VaultHeaderProps) => {
     handleSwitchNetwork,
     handleCloseModal,
     isSwitching,
+    needsToAddNetwork,
   } = useNetworkValidation(baseSepolia);
   return (
     <>
@@ -49,6 +50,7 @@ export const VaultHeader = ({ currentVaultId }: VaultHeaderProps) => {
         requiredChain={requiredChain}
         onSwitchNetwork={handleSwitchNetwork}
         isPending={isSwitching}
+        needsToAddNetwork={needsToAddNetwork}
       />
     </>
   );

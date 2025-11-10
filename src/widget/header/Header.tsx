@@ -22,6 +22,7 @@ export function Header() {
     handleSwitchNetwork,
     handleCloseModal,
     isSwitching,
+    needsToAddNetwork,
   } = useNetworkValidation(baseSepolia);
 
   const handleRefresh = () => {
@@ -70,6 +71,7 @@ export function Header() {
         requiredChain={requiredChain}
         onSwitchNetwork={handleSwitchNetwork}
         isPending={isSwitching}
+        needsToAddNetwork={needsToAddNetwork}
       />
     </Fragment>
   );

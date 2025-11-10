@@ -1,5 +1,6 @@
 import { TanstackQueryProvider } from "@/app/providers/tanstack-query";
 import { WagmiProvider } from "@/app/providers/wagmi";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ReactNode } from "react";
 import "../../styles/globals.css";
@@ -28,7 +29,9 @@ export function RootLayout({ children }: RootLayoutProps) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <WagmiProvider>
-          <TanstackQueryProvider>{children}</TanstackQueryProvider>
+          <TanstackQueryProvider>
+            <RainbowKitProvider>{children}</RainbowKitProvider>
+          </TanstackQueryProvider>
         </WagmiProvider>
       </body>
     </html>
