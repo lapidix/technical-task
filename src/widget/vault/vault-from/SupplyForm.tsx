@@ -5,11 +5,15 @@ import { useTokenBalance, useTokenUsdPrice } from "@/features/erc20/hooks";
 import { ERC20Service } from "@/features/erc20/services";
 import { useVaultBalance } from "@/features/vault/hooks";
 import { VaultService } from "@/features/vault/services";
-import { useSequentialTransactions, useWalletConnection } from "@/shared/hooks";
+import {
+  useNumberPad,
+  useSequentialTransactions,
+  useWalletConnection,
+} from "@/shared/hooks";
 import { formatAmount, formatCompactNumber } from "@/shared/libs";
 import { NetworkIcon } from "@/shared/ui/icons/network";
-import { useRef, useState } from "react";
-import { NumberPad } from "./NumberPad";
+import { NumberPad } from "@/shared/ui/number-pad";
+import { useState } from "react";
 
 interface SupplyFormProps {
   vault: VaultBase;
@@ -23,14 +27,22 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
   const { balance: vaultBalance, refetchBalance: refetchVaultBalance } =
     useVaultBalance(vault.vaultAddress, vault.decimals, address);
 
-  const [amount, setAmount] = useState("0");
-  const [showNumberPad, setShowNumberPad] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isDepositing, setIsDepositing] = useState(false);
 
-  const isOpeningRef = useRef(false);
-
-  const NUMBER_PAD_HEIGHT = 213;
+  const {
+    amount,
+    showNumberPad,
+    handleNumberClick,
+    handleBackspace,
+    handleClear,
+    handleSetAmount,
+    handleCloseNumberPad,
+    handleOpenNumberPad,
+    NUMBER_PAD_HEIGHT,
+  } = useNumberPad({
+    disabled: isApproving || isDepositing,
+  });
 
   const {
     execute: executeApproveAndDeposit,
@@ -39,7 +51,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
   } = useSequentialTransactions({
     onSuccess: () => {
       alert(`✅ ${amount} ${vault.symbol} Supply completed!`);
-      setAmount("0");
+      handleClear();
       refetchTokenBalance();
       refetchVaultBalance();
     },
@@ -55,26 +67,9 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
     return "Processing...";
   };
 
-  const handleNumberClick = (num: string) => {
-    if (num === ".") {
-      if (!amount.includes(".")) {
-        const newAmount = amount + num;
-        setAmount(newAmount);
-      }
-    } else {
-      const newAmount = amount === "0" ? num : amount + num;
-      setAmount(newAmount);
-    }
-  };
-
-  const handleBackspace = () => {
-    const newAmount = amount.length > 1 ? amount.slice(0, -1) : "0";
-    setAmount(newAmount);
-  };
-
   const handleUseMaxBalance = () => {
     const balanceStr = tokenBalance.toString();
-    setAmount(balanceStr);
+    handleSetAmount(balanceStr);
   };
 
   const handleApprove = async () => {
@@ -147,7 +142,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
 
       if (receipt.status === "success") {
         alert(`✅ ${amount} ${vault.symbol} Deposit Success!`);
-        setAmount("0");
+        handleClear();
         refetchTokenBalance();
         refetchVaultBalance();
       } else {
@@ -192,22 +187,6 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
         );
       },
     ]);
-  };
-
-  const handleCloseNumberPad = () => {
-    if (isOpeningRef.current || !showNumberPad) return;
-
-    setShowNumberPad(false);
-  };
-
-  const handleOpenNumberPad = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    isOpeningRef.current = true;
-    setShowNumberPad(true);
-    // 애니메이션 완료 후 isOpeningRef 리셋
-    setTimeout(() => {
-      isOpeningRef.current = false;
-    }, 300);
   };
 
   return (
@@ -297,7 +276,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
               Use Balance {tokenBalance.toLocaleString()} {vault.symbol}
             </button>
             <button
-              onClick={() => setAmount("0")}
+              onClick={handleClear}
               className="text-xs font-medium text-[#9DA59D] bg-[#ECEFEC1F] px-2 py-1.5 rounded"
               suppressHydrationWarning>
               Clear

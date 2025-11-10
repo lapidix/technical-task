@@ -4,11 +4,11 @@ import { VaultBase } from "@/entities/vault/types";
 import { useTokenUsdPrice } from "@/features/erc20/hooks";
 import { useVaultBalance } from "@/features/vault/hooks";
 import { VaultService } from "@/features/vault/services";
-import { useWalletConnection } from "@/shared/hooks";
+import { useNumberPad, useWalletConnection } from "@/shared/hooks";
 import { formatAmount, formatCompactNumber } from "@/shared/libs";
 import { NetworkIcon } from "@/shared/ui/icons/network";
-import { useRef, useState } from "react";
-import { NumberPad } from "./NumberPad";
+import { NumberPad } from "@/shared/ui/number-pad";
+import { useState } from "react";
 
 interface WithdrawFormProps {
   vault: VaultBase;
@@ -20,34 +20,25 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
   const { balance: vaultBalance, refetchBalance: refetchVaultBalance } =
     useVaultBalance(vault.vaultAddress, vault.decimals, address);
 
-  const [amount, setAmount] = useState("0");
-  const [showNumberPad, setShowNumberPad] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
 
-  const isOpeningRef = useRef(false);
-
-  const NUMBER_PAD_HEIGHT = 213;
-
-  const handleNumberClick = (num: string) => {
-    if (num === ".") {
-      if (!amount.includes(".")) {
-        const newAmount = amount + num;
-        setAmount(newAmount);
-      }
-    } else {
-      const newAmount = amount === "0" ? num : amount + num;
-      setAmount(newAmount);
-    }
-  };
-
-  const handleBackspace = () => {
-    const newAmount = amount.length > 1 ? amount.slice(0, -1) : "0";
-    setAmount(newAmount);
-  };
+  const {
+    amount,
+    showNumberPad,
+    handleNumberClick,
+    handleBackspace,
+    handleClear,
+    handleSetAmount,
+    handleCloseNumberPad,
+    handleOpenNumberPad,
+    NUMBER_PAD_HEIGHT,
+  } = useNumberPad({
+    disabled: isWithdrawing,
+  });
 
   const handleUseMax = () => {
     const balanceStr = vaultBalance.toString();
-    setAmount(balanceStr);
+    handleSetAmount(balanceStr);
   };
 
   const handleWithdraw = async () => {
@@ -80,7 +71,7 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
 
       if (receipt.status === "success") {
         alert(`✅ ${amount} ${vault.symbol} Withdraw Success!`);
-        setAmount("0");
+        handleClear();
         refetchVaultBalance();
       } else {
         alert(`❌ Transaction reverted!`);
@@ -95,23 +86,6 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
     } finally {
       setIsWithdrawing(false);
     }
-  };
-
-  const handleCloseNumberPad = () => {
-    // 열리는 중이거나 이미 닫혀있으면 무시
-    if (isOpeningRef.current || !showNumberPad) return;
-
-    setShowNumberPad(false);
-  };
-
-  const handleOpenNumberPad = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    isOpeningRef.current = true;
-    setShowNumberPad(true);
-    // 애니메이션 완료 후 isOpeningRef 리셋
-    setTimeout(() => {
-      isOpeningRef.current = false;
-    }, 300);
   };
 
   return (
@@ -200,7 +174,7 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
               Use Max {vaultBalance.toLocaleString()} {vault.symbol}
             </button>
             <button
-              onClick={() => setAmount("0")}
+              onClick={handleClear}
               className="text-xs font-medium text-[#9DA59D] bg-[#ECEFEC1F] px-2 py-1.5 rounded"
               suppressHydrationWarning>
               Clear
