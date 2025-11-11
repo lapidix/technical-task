@@ -33,9 +33,7 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
     useVaultBalance(vault.vaultAddress, vault.decimals, address);
 
   const invalidateBalances = async () => {
-    console.log("[WithdrawForm] Refetching vault balance...");
     await refetchVaultBalance();
-    console.log("[WithdrawForm] Vault balance refetched successfully");
   };
 
   const {

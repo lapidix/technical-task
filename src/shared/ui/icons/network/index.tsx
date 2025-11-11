@@ -1,4 +1,5 @@
 import { tcm } from "@/shared/libs";
+import { memo } from "react";
 import { BitcoinIcon } from "./BitcoinIcon";
 import { USDCIcon } from "./USDCIcon";
 import { USDTIcon } from "./USDTIcon";
@@ -14,12 +15,12 @@ interface NetworkIconProps extends React.SVGAttributes<SVGSVGElement> {
   icon: NetworkIconType;
 }
 
-export const NetworkIcon: React.FC<NetworkIconProps> = ({
-  icon,
-  className,
-  ...rest
-}) => {
-  const IconComponent = NETWORK_ICON_KEYS[icon];
+export const NetworkIcon: React.FC<NetworkIconProps> = memo(
+  ({ icon, className, ...rest }) => {
+    const IconComponent = NETWORK_ICON_KEYS[icon];
 
-  return <IconComponent className={tcm(className)} {...rest} />;
-};
+    return <IconComponent className={tcm(className)} {...rest} />;
+  }
+);
+
+NetworkIcon.displayName = "NetworkIcon";

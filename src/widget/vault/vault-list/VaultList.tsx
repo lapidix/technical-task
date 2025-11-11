@@ -2,11 +2,18 @@
 import { VaultListItem } from "@/entities/vault/ui/vault-list-item";
 import { useAllVaultData } from "@/features/vault/hooks";
 import { SearchIcon } from "@/shared/ui/icons/common";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 export const VaultList = () => {
   const { allVaultData } = useAllVaultData();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+    },
+    []
+  );
 
   const filteredVaults = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -29,7 +36,7 @@ export const VaultList = () => {
           type="text"
           placeholder="Search"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handleSearchChange}
           className="w-full bg-[#1C1D1C] text-xs text-gray-50 rounded-full py-2.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-[#2F332F] placeholder-gray-50/12"
         />
       </div>

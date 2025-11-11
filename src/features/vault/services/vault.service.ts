@@ -101,11 +101,12 @@ export class VaultService {
   }
 
   static async getAllVaultData(): Promise<VaultEntity[]> {
-    const aprData = await VaultService.getVaultAPRs();
-
-    const totalAssetsData = await VaultService.getVaultTotalAssets();
-
-    const tokenPrices = await VaultService.getTokenPrices();
+    // 모든 API 호출을 병렬로 실행
+    const [aprData, totalAssetsData, tokenPrices] = await Promise.all([
+      VaultService.getVaultAPRs(),
+      VaultService.getVaultTotalAssets(),
+      VaultService.getTokenPrices(),
+    ]);
 
     return SUPPORTED_VAULTS.map((vault, index) => {
       const apr = aprData[index];
@@ -130,21 +131,16 @@ export class VaultService {
   static async getVaultListData(
     userAddress?: `0x${string}`
   ): Promise<VaultEntity[]> {
-    // 1. Get APRs from contracts
-    const aprData = await VaultService.getVaultAPRs();
+    // 모든 API 호출을 병렬로 실행
+    const [aprData, balanceData, totalAssetsData, tokenPrices] =
+      await Promise.all([
+        VaultService.getVaultAPRs(),
+        userAddress ? VaultService.getVaultBalances(userAddress) : [],
+        VaultService.getVaultTotalAssets(),
+        VaultService.getTokenPrices(),
+      ]);
 
-    // 2. Get user balances (if address provided)
-    const balanceData = userAddress
-      ? await VaultService.getVaultBalances(userAddress)
-      : [];
-
-    // 3. Get total assets
-    const totalAssetsData = await VaultService.getVaultTotalAssets();
-
-    // 4. Get token prices
-    const tokenPrices = await VaultService.getTokenPrices();
-
-    // 5. Combine all data
+    // Combine all data
     return SUPPORTED_VAULTS.map((vault, index) => {
       const apr = aprData[index];
       const myBalance = balanceData[index];

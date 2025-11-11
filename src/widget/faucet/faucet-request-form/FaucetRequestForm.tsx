@@ -27,14 +27,12 @@ export const FaucetRequestForm = () => {
   );
 
   const invalidateTokenBalance = async () => {
-    console.log("[FaucetForm] Refetching token balance...");
     await queryClient.refetchQueries({
       queryKey: ERC20_QUERY_KEYS.userTokenBalance(
         selectedToken.tokenAddress,
         address
       ),
     });
-    console.log("[FaucetForm] Token balance refetched successfully");
   };
 
   const { requestTokens, isPending, isConfirming, isSuccess, hash } = useFaucet(

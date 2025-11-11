@@ -42,9 +42,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
   const { showToast } = useToast();
 
   const invalidateBalances = async () => {
-    console.log("[SupplyForm] Refetching balances...");
     await Promise.all([refetchTokenBalance(), refetchVaultBalance()]);
-    console.log("[SupplyForm] Balances refetched successfully");
   };
 
   const [isApproving, setIsApproving] = useState(false);
@@ -87,7 +85,6 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
     currentStep,
   } = useSequentialTransactions({
     onSuccess: () => {
-      console.log("[SupplyForm] Transaction successful!");
       showToast(`${amount} ${vault.symbol} Supply completed!`, "SUCCESS");
       handleClear();
       setTimeout(async () => {

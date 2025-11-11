@@ -5,12 +5,13 @@ import { useToast, useWalletConnection } from "@/shared/hooks";
 import { useModalStore } from "@/shared/store";
 import { NetworkIcon } from "@/shared/ui/icons/network";
 import { useRouter } from "next/navigation";
+import { memo } from "react";
 
 interface VaultListItemProps {
   vault: VaultEntity;
 }
 
-export const VaultListItem = ({ vault }: VaultListItemProps) => {
+export const VaultListItem = memo(({ vault }: VaultListItemProps) => {
   const { isConnected } = useWalletConnection();
   const { showToast } = useToast();
   const { openWalletModal } = useModalStore();
@@ -63,4 +64,6 @@ export const VaultListItem = ({ vault }: VaultListItemProps) => {
       </div>
     </div>
   );
-};
+});
+
+VaultListItem.displayName = "VaultListItem";

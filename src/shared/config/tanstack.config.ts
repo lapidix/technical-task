@@ -1,7 +1,9 @@
 import { QueryClient } from "@tanstack/react-query";
-import { getErrorMessage, parseError } from "../libs/error-handler.libs";
+import { parseError } from "../libs/error-handler.libs";
 
 export const QUERY_STALE_TIME = {
+  PRICE: 30 * 1000, // * 30초 - 가격 데이터 (자주 변함)
+  BALANCE: 10 * 1000, // * 10초 - 잔액 데이터 (자주 변함)
   SHORT: 60 * 1000, // * 1분 - 자주 변하는 데이터
   MEDIUM: 5 * 60 * 1000, // * 5분 - 일반 데이터
   LONG: 30 * 60 * 1000, // * 30분 - 거의 안 변하는 데이터
@@ -19,6 +21,7 @@ export const queryClientConfig = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: QUERY_STALE_TIME.MEDIUM,
+      gcTime: 10 * 60 * 1000, // 10분간 캐시 유지
       retry: (failureCount, error) => {
         const appError = parseError(error);
         // 재시도 불가능한 에러는 즉시 실패
@@ -29,15 +32,12 @@ export const queryClientConfig = new QueryClient({
         return failureCount < 3;
       },
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: false, // 불필요한 refetch 방지
       refetchOnMount: true,
       networkMode: "online",
     },
     mutations: {
       retry: false, // Mutation은 기본적으로 재시도 안함
-      onError: (error) => {
-        console.error("Mutation error:", getErrorMessage(error));
-      },
     },
   },
 });

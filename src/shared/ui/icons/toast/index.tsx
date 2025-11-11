@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ErrorIcon } from "../common";
 import { InformationIcon } from "./InformationIcon";
 import { SuccessIcon } from "./SuccessIcon";
@@ -16,12 +17,12 @@ interface ToastIconProps extends React.SVGAttributes<SVGSVGElement> {
   icon: ToastIconType;
 }
 
-export const ToastIcon: React.FC<ToastIconProps> = ({
-  icon,
-  className,
-  ...rest
-}) => {
-  const IconComponent = TOAST_ICON_KEYS[icon];
+export const ToastIcon: React.FC<ToastIconProps> = memo(
+  ({ icon, className, ...rest }) => {
+    const IconComponent = TOAST_ICON_KEYS[icon];
 
-  return <IconComponent className={className} {...rest} />;
-};
+    return <IconComponent className={className} {...rest} />;
+  }
+);
+
+ToastIcon.displayName = "ToastIcon";

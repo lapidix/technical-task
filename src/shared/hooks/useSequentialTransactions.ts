@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useWaitForTransactionReceipt } from "wagmi";
 
 type TransactionStep = () => Promise<`0x${string}`>;
@@ -23,6 +23,12 @@ export const useSequentialTransactions = (
   const [steps, setSteps] = useState<TransactionStep[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
 
+  // options를 ref로 관리하여 의존성 문제 해결
+  const optionsRef = useRef(options);
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
+
   const { isSuccess, isError, error } = useWaitForTransactionReceipt({
     hash: currentHash,
     confirmations: TX_CONFIG.CONFIRMATIONS,
@@ -30,63 +36,54 @@ export const useSequentialTransactions = (
     timeout: TX_CONFIG.TIMEOUT,
   });
 
-  const resetState = () => {
+  const resetState = useCallback(() => {
     setIsExecuting(false);
     setCurrentHash(undefined);
     setCurrentStep(0);
     setSteps([]);
-  };
+  }, []);
 
-  const executeNextStep = async (nextStep: number) => {
-    console.log(`[Sequential TX] Starting step ${nextStep}...`);
-    try {
-      const hash = await steps[nextStep]();
-      console.log(`[Sequential TX] Step ${nextStep} hash received: ${hash}`);
-      setCurrentHash(hash);
-      setCurrentStep(nextStep);
-    } catch (error) {
-      console.error(`[Sequential TX] Step ${nextStep} failed:`, error);
-      resetState();
-      options?.onError?.(error as Error);
-    }
-  };
+  const executeNextStep = useCallback(
+    async (nextStep: number, currentSteps: TransactionStep[]) => {
+      try {
+        const hash = await currentSteps[nextStep]();
+        setCurrentHash(hash);
+        setCurrentStep(nextStep);
+      } catch (error) {
+        resetState();
+        optionsRef.current?.onError?.(error as Error);
+      }
+    },
+    [resetState]
+  );
 
   useEffect(() => {
     if (!isSuccess || !currentHash) return;
 
     const handleSuccess = async () => {
       const nextStep = currentStep + 1;
-      console.log(
-        `[Sequential TX] Step ${currentStep} completed. Hash: ${currentHash}`
-      );
 
       if (nextStep >= steps.length) {
-        console.log(`[Sequential TX] All steps completed successfully`);
         resetState();
-        options?.onSuccess?.();
+        optionsRef.current?.onSuccess?.();
         return;
       }
 
-      await executeNextStep(nextStep);
+      await executeNextStep(nextStep, steps);
     };
 
     handleSuccess();
-  }, [isSuccess, currentHash]);
+  }, [isSuccess, currentHash, currentStep, steps, resetState, executeNextStep]);
 
   useEffect(() => {
     if (!isError || !error) return;
 
-    console.error(
-      `[Sequential TX] Transaction error at step ${currentStep}:`,
-      error
-    );
     resetState();
-    options?.onError?.(error as Error);
-  }, [isError, error, currentStep]);
+    optionsRef.current?.onError?.(error as Error);
+  }, [isError, error, resetState]);
 
   const execute = async (transactionSteps: TransactionStep[]) => {
     if (isExecuting) {
-      console.warn("Transaction chain already executing, resetting state...");
       resetState();
       await new Promise((resolve) =>
         setTimeout(resolve, TX_CONFIG.RETRY_DELAY)
@@ -97,16 +94,10 @@ export const useSequentialTransactions = (
     setSteps(transactionSteps);
     setCurrentStep(0);
 
-    console.log(
-      `[Sequential TX] Starting transaction chain with ${transactionSteps.length} steps`
-    );
-
     try {
       const hash = await transactionSteps[0]();
-      console.log(`[Sequential TX] Step 0 hash received: ${hash}`);
       setCurrentHash(hash);
     } catch (error) {
-      console.error(`[Sequential TX] Step 0 failed:`, error);
       resetState();
       options?.onError?.(error as Error);
     }

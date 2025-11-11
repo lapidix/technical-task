@@ -43,15 +43,17 @@ export const VaultHeader = ({ currentVaultId }: VaultHeaderProps) => {
         </div>
       </header>
 
-      <NetworkSwitchModal
-        isOpen={showModal}
-        onClose={handleCloseModal}
-        currentChainId={currentChainId}
-        requiredChain={requiredChain}
-        onSwitchNetwork={handleSwitchNetwork}
-        isPending={isSwitching}
-        needsToAddNetwork={needsToAddNetwork}
-      />
+      {showModal && (
+        <NetworkSwitchModal
+          isOpen={showModal}
+          onClose={handleCloseModal}
+          currentChainId={currentChainId}
+          requiredChain={requiredChain}
+          onSwitchNetwork={handleSwitchNetwork}
+          isPending={isSwitching}
+          needsToAddNetwork={needsToAddNetwork}
+        />
+      )}
     </>
   );
 };
