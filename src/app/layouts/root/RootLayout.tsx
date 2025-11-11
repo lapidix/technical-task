@@ -1,5 +1,4 @@
 import { TanstackQueryProvider } from "@/app/providers/tanstack-query";
-import { ToastProvider } from "@/app/providers/toast-provider";
 import { WagmiProvider } from "@/app/providers/wagmi";
 import { ToastContainer } from "@/shared/ui/toast";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
@@ -33,10 +32,8 @@ export function RootLayout({ children }: RootLayoutProps) {
         <WagmiProvider>
           <TanstackQueryProvider>
             <RainbowKitProvider>
-              <ToastProvider>
-                {children}
-                <ToastContainer />
-              </ToastProvider>
+              {children}
+              <ToastContainer />
             </RainbowKitProvider>
           </TanstackQueryProvider>
         </WagmiProvider>

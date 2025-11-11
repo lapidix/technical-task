@@ -2,6 +2,7 @@
 
 import { VaultEntity } from "@/entities/vault/types";
 import { useToast, useWalletConnection } from "@/shared/hooks";
+import { useModalStore } from "@/shared/store";
 import { NetworkIcon } from "@/shared/ui/icons/network";
 import { useRouter } from "next/navigation";
 
@@ -12,6 +13,7 @@ interface VaultListItemProps {
 export const VaultListItem = ({ vault }: VaultListItemProps) => {
   const { isConnected } = useWalletConnection();
   const { showToast } = useToast();
+  const { openWalletModal } = useModalStore();
   const router = useRouter();
 
   const handleClick = (e: React.MouseEvent) => {
@@ -19,7 +21,14 @@ export const VaultListItem = ({ vault }: VaultListItemProps) => {
       e.preventDefault();
       showToast(
         "Please connect your wallet first to access the vault.",
-        "WARNING"
+        "WARNING",
+        {
+          duration: 3000,
+          action: {
+            label: "Connect",
+            onClick: openWalletModal,
+          },
+        }
       );
       return;
     }

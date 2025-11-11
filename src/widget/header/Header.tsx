@@ -6,14 +6,16 @@ import {
   WalletConnectionButton,
   WalletConnectionModal,
 } from "@/features/wallet/ui";
+import { useModalStore } from "@/shared/store";
 import { MenuIcon, RefreshIcon } from "@/shared/ui/icons/common";
 import { LogoIcon } from "@/shared/ui/icons/common/LogoIcon";
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { baseSepolia } from "viem/chains";
 
 export function Header() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { walletModalOpen, openWalletModal, closeWalletModal } =
+    useModalStore();
 
   const {
     showModal,
@@ -51,7 +53,7 @@ export function Header() {
               onClick={handleRefresh}
               className={`w-6 h-6 cursor-pointer text-accent transition-transform duration-500 hover:rotate-180`}
             />
-            <WalletConnectionButton onOpenModal={() => setIsModalOpen(true)} />
+            <WalletConnectionButton onOpenModal={openWalletModal} />
             <MenuIcon className="w-6 h-6 cursor-pointer text-[#ECEFEC] hover:text-[#E6F5AA] transition-all duration-300 hover:scale-110" />
           </div>
         </div>
@@ -59,8 +61,8 @@ export function Header() {
 
       {/* Wallet Modal */}
       <WalletConnectionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={walletModalOpen}
+        onClose={closeWalletModal}
       />
 
       {/* Network Switch Modal */}

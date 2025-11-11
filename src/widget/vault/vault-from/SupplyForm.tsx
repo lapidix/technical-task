@@ -10,7 +10,6 @@ import { VaultService } from "@/features/vault/services";
 import { wagmiConfig } from "@/shared/config/wagmi.config";
 import {
   createRetryAction,
-  useNumberPad,
   useSequentialTransactions,
   useToast,
   useWalletConnection,
@@ -21,10 +20,10 @@ import {
   formatReceiptRevertedMessage,
   formatTransactionErrorMessage,
 } from "@/shared/libs";
+import { NUMBER_PAD_HEIGHT, useNumberPadStore } from "@/shared/store";
 import { NetworkIcon } from "@/shared/ui/icons/network";
-import { NumberPad } from "@/shared/ui/number-pad";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { waitForTransactionReceipt } from "wagmi/actions";
 
 interface SupplyFormProps {
@@ -52,18 +51,35 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
 
   const {
     amount,
-    showNumberPad,
-    handleNumberClick,
-    handleBackspace,
-    handleClear,
-    handleSetAmount,
-    handleCloseNumberPad,
-    handleOpenNumberPad,
-    NUMBER_PAD_HEIGHT,
-  } = useNumberPad({
-    disabled: isApproving || isDepositing,
-    maxAmount: Number(tokenBalance),
-  });
+    open,
+    close,
+    clear,
+    setAmount: handleSetAmount,
+    setMaxAmount,
+    setDisabled,
+  } = useNumberPadStore();
+
+  // maxAmount와 disabled 상태 동기화
+  useEffect(() => {
+    setMaxAmount(Number(tokenBalance));
+  }, [tokenBalance, setMaxAmount]);
+
+  useEffect(() => {
+    setDisabled(isApproving || isDepositing);
+  }, [isApproving, isDepositing, setDisabled]);
+
+  const handleOpenNumberPad = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    open("supply", Number(tokenBalance));
+  };
+
+  const handleClear = () => {
+    clear();
+  };
+
+  const handleCloseNumberPad = () => {
+    close();
+  };
 
   const {
     execute: executeApproveAndDeposit,
@@ -114,7 +130,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
         vault.tokenAddress,
         vault.vaultAddress,
         amount,
-        vault.decimals
+        vault.decimals + 99
       );
 
       const receipt = await waitForTransactionReceipt(wagmiConfig, {
@@ -256,11 +272,7 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
       {/* Scrollable Content */}
       <div
         className="flex-1 overflow-y-auto"
-        style={{
-          paddingBottom: showNumberPad ? `${NUMBER_PAD_HEIGHT}px` : "0",
-          transition: "padding-bottom 0.3s ease-out",
-          overscrollBehaviorY: "none",
-        }}>
+        style={{ paddingBottom: `${NUMBER_PAD_HEIGHT}px` }}>
         <div className="px-4 py-2 flex flex-col gap-8">
           {/* Token Info */}
           <div>
@@ -384,20 +396,6 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
             {getButtonText()}
           </button>
         </div>
-      </div>
-
-      {/* Number Pad */}
-      <div
-        className="fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ease-out"
-        style={{
-          transform: showNumberPad ? "translateY(0)" : "translateY(100%)",
-          pointerEvents: showNumberPad ? "auto" : "none",
-        }}
-        onClick={(e) => e.stopPropagation()}>
-        <NumberPad
-          onNumberClick={handleNumberClick}
-          onBackspace={handleBackspace}
-        />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { tcm } from "../../libs";
 import { ToastType } from "../../types";
 import { CloseIcon } from "../icons/common";
@@ -26,13 +26,22 @@ export const Toast = ({
   duration = 10000,
   action,
 }: ToastProps) => {
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose(id);
+    }, 300); // 애니메이션 duration과 맞춤
+  }, [id, onClose]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      onClose(id);
+      handleClose();
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration, id, onClose]);
+  }, [duration, handleClose]);
 
   const styles = {
     SUCCESS: {
@@ -70,9 +79,10 @@ export const Toast = ({
       className={tcm(
         styles.bg,
         styles.border,
-        "backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg px-4 py-3 w-full max-w-sm mb-2 animate-slide-in-right"
+        "backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg px-4 w-full max-w-7xl mb-2",
+        isClosing ? "animate-slide-out-down" : "animate-slide-in-up"
       )}>
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 py-3">
         <div
           className={tcm(
             styles.iconBg,
@@ -95,7 +105,7 @@ export const Toast = ({
             <button
               onClick={() => {
                 action.onClick();
-                onClose(id);
+                handleClose();
               }}
               className="mt-3 px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 text-xs font-semibold rounded-md border border-blue-500/30 transition-all duration-200 hover:border-blue-500/50 active:scale-95 flex-shrink-0">
               {action.label}
@@ -103,7 +113,7 @@ export const Toast = ({
           )}
         </div>
         <button
-          onClick={() => onClose(id)}
+          onClick={handleClose}
           className={tcm(
             styles.text,
             "opacity-50 hover:opacity-100 transition-opacity flex-shrink-0 -mt-0.5"

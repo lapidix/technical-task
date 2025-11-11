@@ -1,8 +1,9 @@
 "use client";
 
 import { useRequireWallet } from "@/shared/hooks";
+import { NumberPad } from "@/shared/ui/number-pad";
 import { Spinner } from "@/shared/ui/spinner";
-import { ReactNode } from "react";
+import { Fragment, ReactNode } from "react";
 
 interface WalletLayoutProps {
   children: ReactNode;
@@ -23,5 +24,10 @@ export function WalletLayout({ children }: WalletLayoutProps) {
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <Fragment>
+      {children}
+      <NumberPad />
+    </Fragment>
+  );
 }

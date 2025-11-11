@@ -58,7 +58,7 @@ export function WalletConnectionModal({
               </p>
             </div>
           </div>
-          <DisconnectButton onClick={onClose}>Disconnect</DisconnectButton>
+          <DisconnectButton>Disconnect</DisconnectButton>
         </div>
       ) : (
         <div className="space-y-3">
