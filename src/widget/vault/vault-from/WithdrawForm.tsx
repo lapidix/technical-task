@@ -5,11 +5,7 @@ import { useTokenUsdPrice } from "@/features/erc20/hooks";
 import { useVaultBalance } from "@/features/vault/hooks";
 import { VaultService } from "@/features/vault/services";
 import { wagmiConfig } from "@/shared/config/wagmi.config";
-import {
-  createRetryAction,
-  useToast,
-  useWalletConnection,
-} from "@/shared/hooks";
+import { useToast, useWalletConnection } from "@/shared/hooks";
 import {
   formatAmount,
   formatCompactNumber,
@@ -17,6 +13,7 @@ import {
   formatTransactionErrorMessage,
 } from "@/shared/libs";
 import { NUMBER_PAD_HEIGHT, useNumberPadStore } from "@/shared/store";
+import { RefreshIcon } from "@/shared/ui/icons/common";
 import { NetworkIcon } from "@/shared/ui/icons/network";
 import { useEffect, useState } from "react";
 import { waitForTransactionReceipt } from "wagmi/actions";
@@ -127,7 +124,15 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
 
         showToast(errorMessage, "ERROR", {
           duration: 12000,
-          action: createRetryAction(handleWithdraw),
+          action: {
+            label: (
+              <span className="flex items-center gap-1.5">
+                <RefreshIcon className="w-3.5 h-3.5" />
+                Retry
+              </span>
+            ),
+            onClick: handleWithdraw,
+          },
         });
       }
     } catch (error) {
@@ -135,7 +140,15 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
 
       showToast(errorMessage, "ERROR", {
         duration: 10000,
-        action: createRetryAction(handleWithdraw),
+        action: {
+          label: (
+            <span className="flex items-center gap-1.5">
+              <RefreshIcon className="w-3.5 h-3.5" />
+              Retry
+            </span>
+          ),
+          onClick: handleWithdraw,
+        },
       });
     } finally {
       setIsWithdrawing(false);

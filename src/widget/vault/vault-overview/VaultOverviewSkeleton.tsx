@@ -2,7 +2,7 @@ import { InformationIcon } from "@/shared/ui/icons/common";
 
 export const VaultOverviewSkeleton = () => {
   return (
-    <div className="animate-fade-in">
+    <div>
       <div className="flex items-start justify-between">
         <div className="w-full flex items-center justify-between gap-2">
           <div className="flex items-end py-3">

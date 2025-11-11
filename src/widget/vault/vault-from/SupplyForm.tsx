@@ -9,7 +9,6 @@ import { useVaultBalance } from "@/features/vault/hooks";
 import { VaultService } from "@/features/vault/services";
 import { wagmiConfig } from "@/shared/config/wagmi.config";
 import {
-  createRetryAction,
   useSequentialTransactions,
   useToast,
   useWalletConnection,
@@ -21,6 +20,7 @@ import {
   formatTransactionErrorMessage,
 } from "@/shared/libs";
 import { NUMBER_PAD_HEIGHT, useNumberPadStore } from "@/shared/store";
+import { RefreshIcon } from "@/shared/ui/icons/common";
 import { NetworkIcon } from "@/shared/ui/icons/network";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -99,7 +99,15 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
       console.error("[SupplyForm] Transaction failed:", error);
       showToast("Fail Transaction: " + error.message, "ERROR", {
         duration: 10000,
-        action: createRetryAction(handleApproveAndDeposit),
+        action: {
+          label: (
+            <span className="flex items-center gap-1.5">
+              <RefreshIcon className="w-3.5 h-3.5" />
+              Retry
+            </span>
+          ),
+          onClick: handleApproveAndDeposit,
+        },
       });
     },
   });
@@ -153,7 +161,15 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
 
         showToast(errorMessage, "ERROR", {
           duration: 12000,
-          action: createRetryAction(handleApprove),
+          action: {
+            label: (
+              <span className="flex items-center gap-1.5">
+                <RefreshIcon className="w-3.5 h-3.5" />
+                Retry
+              </span>
+            ),
+            onClick: handleApprove,
+          },
         });
       }
     } catch (error) {
@@ -161,7 +177,15 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
 
       showToast(errorMessage, "ERROR", {
         duration: 10000,
-        action: createRetryAction(handleApprove),
+        action: {
+          label: (
+            <span className="flex items-center gap-1.5">
+              <RefreshIcon className="w-3.5 h-3.5" />
+              Retry
+            </span>
+          ),
+          onClick: handleApprove,
+        },
       });
     } finally {
       setIsApproving(false);
@@ -224,7 +248,15 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
 
         showToast(errorMessage, "ERROR", {
           duration: 12000,
-          action: createRetryAction(handleDeposit),
+          action: {
+            label: (
+              <span className="flex items-center gap-1.5">
+                <RefreshIcon className="w-3.5 h-3.5" />
+                Retry
+              </span>
+            ),
+            onClick: handleDeposit,
+          },
         });
       }
     } catch (error) {
@@ -232,7 +264,15 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
 
       showToast(errorMessage, "ERROR", {
         duration: 10000,
-        action: createRetryAction(handleDeposit),
+        action: {
+          label: (
+            <span className="flex items-center gap-1.5">
+              <RefreshIcon className="w-3.5 h-3.5" />
+              Retry
+            </span>
+          ),
+          onClick: handleDeposit,
+        },
       });
     } finally {
       setIsDepositing(false);

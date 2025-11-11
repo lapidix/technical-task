@@ -9,7 +9,7 @@ export const useAllVaultData = () => {
     queryFn: () => VaultService.getAllVaultData(),
     staleTime: QUERY_STALE_TIME.MEDIUM,
     refetchInterval: 60000,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 
   return { allVaultData: vaultsWithPrice };
