@@ -1,0 +1,76 @@
+service: nextjs-lambda-app
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-northeast-2
+  stage: ${opt:stage, 'dev'}
+  memorySize: 1024
+  timeout: 30
+  environment:
+    NODE_ENV: production
+
+plugins:
+  - serverless-domain-manager
+
+custom:
+  customDomain:
+    domainName: ${env:CUSTOM_DOMAIN, 'task.lapidix.dev'}
+    basePath: ""
+    stage: ${self:provider.stage}
+    certificateArn: ${env:ACM_CERTIFICATE_ARN}
+    createRoute53Record: false
+    endpointType: "regional"
+    securityPolicy: tls_1_2
+    apiType: http
+
+  assetsBucketName: ${self:service}-assets-${self:provider.stage}
+
+functions:
+  nextServer:
+    handler: .open-next/server-functions/default/index.handler
+    events:
+      - httpApi: "*"
+    url: true # Lambda Function URL 활성화
+
+  imageOptimization:
+    handler: .open-next/image-optimization-function/index.handler
+    events:
+      - httpApi:
+          path: /_next/image
+          method: GET
+
+resources:
+  Resources:
+    # S3 버킷 - 정적 파일용
+    AssetsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.assetsBucketName}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: 404.html
+
+    # S3 버킷 정책 - 퍼블릭 읽기 허용
+    AssetsBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref AssetsBucket
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal: "*"
+              Action: "s3:GetObject"
+              Resource: !Sub "${AssetsBucket.Arn}/*"
+
+package:
+  patterns:
+    - "!node_modules/**"
+    - "!.next/**"
+    - "!.git/**"
+    - ".open-next/**"
