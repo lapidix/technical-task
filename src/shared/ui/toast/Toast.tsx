@@ -32,7 +32,7 @@ export const Toast = ({
     setIsClosing(true);
     setTimeout(() => {
       onClose(id);
-    }, 300); // 애니메이션 duration과 맞춤
+    }, 300);
   }, [id, onClose]);
 
   useEffect(() => {

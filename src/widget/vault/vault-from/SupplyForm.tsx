@@ -18,6 +18,7 @@ import {
   formatCompactNumber,
   formatReceiptRevertedMessage,
   formatTransactionErrorMessage,
+  getErrorMessageConfig,
 } from "@/shared/libs";
 import { NUMBER_PAD_HEIGHT, useNumberPadStore } from "@/shared/store";
 import { RefreshIcon } from "@/shared/ui/icons/common";
@@ -59,7 +60,6 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
     setDisabled,
   } = useNumberPadStore();
 
-  // maxAmount와 disabled 상태 동기화
   useEffect(() => {
     setMaxAmount(Number(tokenBalance));
   }, [tokenBalance, setMaxAmount]);
@@ -90,20 +90,20 @@ export const SupplyForm = ({ vault }: SupplyFormProps) => {
       console.log("[SupplyForm] Transaction successful!");
       showToast(`${amount} ${vault.symbol} Supply completed!`, "SUCCESS");
       handleClear();
-      // Refetch all related queries after successful transaction
       setTimeout(async () => {
         await invalidateBalances();
       }, 2000);
     },
     onError: (error) => {
       console.error("[SupplyForm] Transaction failed:", error);
-      showToast("Fail Transaction: " + error.message, "ERROR", {
+      const errorConfig = getErrorMessageConfig(error);
+      showToast(errorConfig.message, "ERROR", {
         duration: 10000,
         action: {
           label: (
             <span className="flex items-center gap-1.5">
               <RefreshIcon className="w-3.5 h-3.5" />
-              Retry
+              {errorConfig.action}
             </span>
           ),
           onClick: handleApproveAndDeposit,

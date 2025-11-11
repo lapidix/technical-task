@@ -21,10 +21,9 @@ interface ToastOptions {
 }
 
 interface ToastStore {
-  // State
+  //
   toasts: ToastMessage[];
 
-  // Actions
   showToast: (
     message: string,
     type?: ToastType,
@@ -35,10 +34,8 @@ interface ToastStore {
 }
 
 export const useToastStore = create<ToastStore>((set) => ({
-  // Initial state
   toasts: [],
 
-  // Actions
   showToast: (message, type = "INFO", options) => {
     const id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
@@ -54,7 +51,6 @@ export const useToastStore = create<ToastStore>((set) => ({
       toasts: [...state.toasts, newToast],
     }));
 
-    // Auto-hide toast after duration (default 5 seconds)
     const duration = options?.duration ?? 5000;
     if (duration > 0) {
       setTimeout(() => {

@@ -1,11 +1,9 @@
 import { create } from "zustand";
 
 interface ModalStore {
-  // State
   walletModalOpen: boolean;
   networkSwitchModalOpen: boolean;
 
-  // Actions
   openWalletModal: () => void;
   closeWalletModal: () => void;
   openNetworkSwitchModal: () => void;
@@ -14,11 +12,9 @@ interface ModalStore {
 }
 
 export const useModalStore = create<ModalStore>((set) => ({
-  // Initial state
   walletModalOpen: false,
   networkSwitchModalOpen: false,
 
-  // Actions
   openWalletModal: () => set({ walletModalOpen: true }),
   closeWalletModal: () => set({ walletModalOpen: false }),
   openNetworkSwitchModal: () => set({ networkSwitchModalOpen: true }),

@@ -11,6 +11,7 @@ import {
   formatCompactNumber,
   formatReceiptRevertedMessage,
   formatTransactionErrorMessage,
+  getErrorMessageConfig,
 } from "@/shared/libs";
 import { NUMBER_PAD_HEIGHT, useNumberPadStore } from "@/shared/store";
 import { RefreshIcon } from "@/shared/ui/icons/common";
@@ -47,7 +48,6 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
     setDisabled,
   } = useNumberPadStore();
 
-  // maxAmount와 disabled 상태 동기화
   useEffect(() => {
     setMaxAmount(Number(vaultBalance));
   }, [vaultBalance, setMaxAmount]);
@@ -91,7 +91,6 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
         address
       );
 
-      // 트랜잭션 confirm 대기
       const receipt = await waitForTransactionReceipt(wagmiConfig, {
         hash,
         confirmations: 1,
@@ -106,12 +105,10 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
           { duration: 8000 }
         );
         handleClear();
-        // Refetch all related queries after successful transaction
         setTimeout(async () => {
           await invalidateBalances();
         }, 2000);
       } else {
-        // Transaction was sent but reverted
         const revertReason =
           (receipt as unknown as { revertReason: string }).revertReason ||
           "Unknown reason";
@@ -137,6 +134,7 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
       }
     } catch (error) {
       const errorMessage = formatTransactionErrorMessage(error, hash);
+      const errorConfig = getErrorMessageConfig(error);
 
       showToast(errorMessage, "ERROR", {
         duration: 10000,
@@ -144,7 +142,7 @@ export const WithdrawForm = ({ vault }: WithdrawFormProps) => {
           label: (
             <span className="flex items-center gap-1.5">
               <RefreshIcon className="w-3.5 h-3.5" />
-              Retry
+              {errorConfig.action}
             </span>
           ),
           onClick: handleWithdraw,

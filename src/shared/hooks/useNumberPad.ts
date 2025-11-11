@@ -22,7 +22,7 @@ export const useNumberPad = (options?: UseNumberPadOptions) => {
       }
     } else {
       const newAmount = amount === "0" ? num : amount + num;
-      // Check if new amount exceeds max
+      //* Check if new amount exceeds max
       if (maxAmount !== undefined && parseFloat(newAmount) > maxAmount) {
         return;
       }

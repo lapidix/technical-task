@@ -2,7 +2,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useWalletConnection } from "./useWalletConnection";
 
-const REDIRECT_DELAY = 500; // ms
+const REDIRECT_DELAY = 500; //
 const HOME_PATH = "/";
 
 export function useRequireWallet() {
@@ -13,12 +13,12 @@ export function useRequireWallet() {
   const hasSeenConnected = useRef(false);
 
   useEffect(() => {
-    // Track if user was ever connected
+    //* Track if user was ever connected
     if (isConnected || status === "connected") {
       hasSeenConnected.current = true;
     }
 
-    // Early returns for various states
+    //* Early returns for various states
     if (hasRedirected.current) return;
     if (!mounted || isLoading) return;
     if (status === "connecting" || status === "reconnecting") return;
@@ -26,7 +26,7 @@ export function useRequireWallet() {
     const isDisconnected = status === "disconnected" && !isConnected;
     if (!isDisconnected) return;
 
-    // Case 1: Never connected - wait before redirecting (might be reconnecting)
+    //* Case 1: Never connected - wait before redirecting (might be reconnecting)
     if (!hasSeenConnected.current) {
       const timeoutId = setTimeout(() => {
         if (!hasSeenConnected.current && !hasRedirected.current) {
@@ -38,7 +38,7 @@ export function useRequireWallet() {
       return () => clearTimeout(timeoutId);
     }
 
-    // Case 2: Was connected but now disconnected - redirect immediately
+    //* Case 2: Was connected but now disconnected - redirect immediately
     hasRedirected.current = true;
     router.push(HOME_PATH);
   }, [mounted, isLoading, isConnected, status, router]);

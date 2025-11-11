@@ -13,10 +13,8 @@ export const TransactionStatus = ({
   hash,
   onRefreshBalance,
 }: TransactionStatusProps) => {
-  // Auto-refresh balance when transaction succeeds
   useEffect(() => {
     if (isSuccess && hash) {
-      // Add delay to ensure blockchain state is updated
       setTimeout(() => {
         onRefreshBalance();
       }, 2000);

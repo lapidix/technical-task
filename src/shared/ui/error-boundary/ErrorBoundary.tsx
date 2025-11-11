@@ -1,5 +1,6 @@
 "use client";
 
+import { getErrorMessageConfig } from "@/shared/libs";
 import { useToastStore } from "@/shared/store";
 import { Component, ReactNode } from "react";
 
@@ -29,19 +30,18 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error("ErrorBoundary caught:", error, errorInfo);
     this.props.onError?.(error, errorInfo);
 
-    // Show toast notification if enabled
     if (this.props.showToast !== false) {
       const showToast = useToastStore.getState().showToast;
+      const errorConfig = getErrorMessageConfig(error);
 
-      // Import RefreshIcon dynamically for the action button
       import("@/shared/ui/icons/common/RefreshIcon").then(({ RefreshIcon }) => {
-        showToast(error.message || "An error occurred", "ERROR", {
+        showToast(errorConfig.message, "ERROR", {
           duration: 5000,
           action: {
             label: (
               <span className="flex items-center gap-1.5">
                 <RefreshIcon className="w-3.5 h-3.5" />
-                Retry
+                {errorConfig.action}
               </span>
             ),
             onClick: this.reset,

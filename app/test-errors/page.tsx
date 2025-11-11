@@ -5,11 +5,10 @@ import { ApiErrorFallback } from "@/shared/ui/error-boundary/ApiErrorFallback";
 import { DefaultErrorFallback } from "@/shared/ui/error-boundary/DefaultErrorFallback";
 import { useState } from "react";
 
-// 에러를 발생시키는 컴포넌트들
 const ThrowError = ({ message }: { message: string }) => {
   throw new Error(message);
 };
-
+// ! 마지막에 삭제해야함
 export default function TestErrorsPage() {
   const [errorType, setErrorType] = useState<string | null>(null);
 
