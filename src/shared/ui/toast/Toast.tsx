@@ -79,7 +79,7 @@ export const Toast = ({
       className={tcm(
         styles.bg,
         styles.border,
-        "backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg px-4 w-full max-w-7xl mb-2",
+        "backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg px-4 w-full mb-2",
         isClosing ? "animate-slide-out-down" : "animate-slide-in-up"
       )}>
       <div className="flex items-start gap-3 py-3">

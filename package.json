@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "source .env.deploy && npm run build && npx open-next@latest build && serverless deploy",
-    "deploy:prod": "source .env.deploy && npm run build && npx open-next@latest build && serverless deploy --stage prod",
-    "deploy:full": "source .env.deploy && npm run deploy && aws s3 sync .open-next/assets s3://nextjs-lambda-app-assets-dev --delete",
+    "deploy": "source .env.deploy && export $(cat .env.deploy | xargs) && npm run build && npx open-next@latest build && serverless deploy",
+    "deploy:prod": "source .env.deploy && export $(cat .env.deploy | xargs) && npm run build && npx open-next@latest build && serverless deploy --stage prod",
+    "deploy:full": "source .env.deploy && export $(cat .env.deploy | xargs) && npm run build && npx open-next@latest build && serverless deploy && aws s3 sync .open-next/assets s3://nextjs-lambda-app-assets-dev --delete",
     "sync:s3": "aws s3 sync .open-next/assets s3://nextjs-lambda-app-assets-dev --delete"
   },
   "dependencies": {
