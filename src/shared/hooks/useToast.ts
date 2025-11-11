@@ -5,12 +5,10 @@ export const useToast = () => {
   return { showToast, hideToast };
 };
 
-export const createRetryAction = (onRetry: () => void) => ({
-  label: "🔄 Retry",
-  onClick: onRetry,
-});
-
-export const createToastAction = (label: string, onClick: () => void) => ({
+export const createToastAction = (
+  label: string | React.ReactNode,
+  onClick: () => void
+) => ({
   label,
   onClick,
 });

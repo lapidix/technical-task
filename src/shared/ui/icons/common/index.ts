@@ -1,8 +1,10 @@
 export { BackSpaceIcon } from "./BackSpaceIcon";
+export { ClockIcon } from "./ClockIcon";
 export { CloseIcon } from "./CloseIcon";
 export { ConnectIcon } from "./ConnectIcon";
 export { DownArrowIcon } from "./DownArrowIcon";
 export { EarnIcon } from "./EarnIcon";
+export { ErrorIcon } from "./ErrorIcon";
 export { InformationIcon } from "./InformationIcon";
 export { LeftArrowIcon } from "./LeftArrowIcon";
 export { LogoIcon } from "./LogoIcon";
@@ -13,3 +15,5 @@ export { PortfolioIcon } from "./PortfolioIcon";
 export { RefreshIcon } from "./RefreshIcon";
 export { RightArrowIcon } from "./RightArrowIcon";
 export { SearchIcon } from "./SearchIcon";
+export { ShieldExclamationIcon } from "./ShieldExclamationIcon";
+export { SignalSlashIcon } from "./SignalSlashIcon";

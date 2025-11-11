@@ -7,7 +7,7 @@ export interface ToastMessage {
   type: ToastType;
   duration?: number;
   action?: {
-    label: string;
+    label: string | React.ReactNode;
     onClick: () => void;
   };
 }
@@ -15,7 +15,7 @@ export interface ToastMessage {
 interface ToastOptions {
   duration?: number;
   action?: {
-    label: string;
+    label: string | React.ReactNode;
     onClick: () => void;
   };
 }

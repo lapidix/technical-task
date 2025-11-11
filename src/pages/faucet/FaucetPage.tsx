@@ -1,5 +1,6 @@
 "use client";
 
+import { ErrorBoundary } from "@/shared/ui/error-boundary";
 import { FaucetRequestForm } from "@/widget/faucet/faucet-request-form";
 import { Header } from "@/widget/header";
 
@@ -15,7 +16,9 @@ export const FaucetPage = () => {
           </p>
         </div>
 
-        <FaucetRequestForm />
+        <ErrorBoundary>
+          <FaucetRequestForm />
+        </ErrorBoundary>
       </main>
     </div>
   );

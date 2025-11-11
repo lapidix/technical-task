@@ -102,14 +102,16 @@ export const Toast = ({
             </p>
           </div>
           {action && (
-            <button
-              onClick={() => {
-                action.onClick();
-                handleClose();
-              }}
-              className="mt-3 px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 text-xs font-semibold rounded-md border border-blue-500/30 transition-all duration-200 hover:border-blue-500/50 active:scale-95 flex-shrink-0">
-              {action.label}
-            </button>
+            <div className="flex justify-end mt-3">
+              <button
+                onClick={() => {
+                  action.onClick();
+                  handleClose();
+                }}
+                className="px-6 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 text-sm font-semibold rounded-md border border-blue-500/30 transition-all duration-200 hover:border-blue-500/50 active:scale-95">
+                {action.label}
+              </button>
+            </div>
           )}
         </div>
         <button

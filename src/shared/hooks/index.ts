@@ -1,5 +1,5 @@
 export { useNumberPad } from "./useNumberPad";
 export { useSequentialTransactions } from "./useSequentialTransactions";
-export { createRetryAction, createToastAction, useToast } from "./useToast";
+export { createToastAction, useToast } from "./useToast";
 export { useWalletConnection } from "./useWalletConnection";
 export { useRequireWallet } from "./useWalletRequired";

@@ -1,4 +1,4 @@
-import { ErrorIcon } from "./ErrorIcon";
+import { ErrorIcon } from "../common";
 import { InformationIcon } from "./InformationIcon";
 import { SuccessIcon } from "./SuccessIcon";
 import { WarningIcon } from "./WarningIcon";

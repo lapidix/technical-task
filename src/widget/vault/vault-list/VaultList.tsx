@@ -1,5 +1,5 @@
 "use client";
-import { VaultListItem } from "@/entities/vault/ui";
+import { VaultListItem } from "@/entities/vault/ui/vault-list-item";
 import { useAllVaultData } from "@/features/vault/hooks";
 import { SearchIcon } from "@/shared/ui/icons/common";
 import { useMemo, useState } from "react";
