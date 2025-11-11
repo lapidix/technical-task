@@ -327,7 +327,8 @@ Next.js 애플리케이션을 AWS Lambda, S3, CloudFront를 활용한 Serverless
 
 ### Infrastructure Architecture Flow
 
-![Architecture Diagram](./architecture-diagram.png)
+<img width="1100" height="1820" alt="dapp-infrastructure" src="https://github.com/user-attachments/assets/2284abbd-b465-4f20-90ac-3b1103ce7c7c" />
+
 
 ### 5.2 요청 흐름
 
