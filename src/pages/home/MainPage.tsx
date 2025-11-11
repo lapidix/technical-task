@@ -1,4 +1,5 @@
 "use client";
+import { useWalletConnection } from "@/shared/hooks";
 import { ApiErrorFallback, ErrorBoundary } from "@/shared/ui/error-boundary";
 import { Header } from "@/widget/header";
 import { BottomNavigation } from "@/widget/navigation/bottom-navigation";
@@ -26,6 +27,12 @@ const MainPageContentSkeleton = () => {
 };
 
 const MainPageContent = () => {
+  const { mounted } = useWalletConnection();
+
+  // hydration 완료 전에는 스켈레톤
+  if (!mounted) {
+    return <MainPageContentSkeleton />;
+  }
   return (
     <>
       <VaultOverview />

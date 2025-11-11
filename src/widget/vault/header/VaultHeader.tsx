@@ -3,11 +3,20 @@ import { VAULT_QUERY_KEYS } from "@/entities/vault/constants";
 import { SupportedVaultId } from "@/entities/vault/types";
 import { VaultService } from "@/features/vault/services";
 import { useNetworkValidation } from "@/features/wallet/hooks";
-import { NetworkSwitchModal } from "@/features/wallet/ui";
 import { LeftArrowIcon } from "@/shared/ui/icons/common";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { baseSepolia } from "viem/chains";
+
+// NetworkSwitchModal을 lazy loading으로 변경
+const NetworkSwitchModal = dynamic(
+  () =>
+    import("@/features/wallet/ui").then((mod) => ({
+      default: mod.NetworkSwitchModal,
+    })),
+  { ssr: false }
+);
 
 interface VaultHeaderProps {
   currentVaultId: SupportedVaultId;

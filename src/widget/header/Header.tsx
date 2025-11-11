@@ -1,17 +1,30 @@
 "use client";
 
 import { useNetworkValidation } from "@/features/wallet/hooks";
-import {
-  NetworkSwitchModal,
-  WalletConnectionButton,
-  WalletConnectionModal,
-} from "@/features/wallet/ui";
+import { WalletConnectionButton } from "@/features/wallet/ui";
 import { useModalStore } from "@/shared/store";
 import { MenuIcon, RefreshIcon } from "@/shared/ui/icons/common";
 import { LogoIcon } from "@/shared/ui/icons/common/LogoIcon";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Fragment } from "react";
 import { baseSepolia } from "viem/chains";
+
+const WalletConnectionModal = dynamic(
+  () =>
+    import("@/features/wallet/ui").then((mod) => ({
+      default: mod.WalletConnectionModal,
+    })),
+  { ssr: false }
+);
+
+const NetworkSwitchModal = dynamic(
+  () =>
+    import("@/features/wallet/ui").then((mod) => ({
+      default: mod.NetworkSwitchModal,
+    })),
+  { ssr: false }
+);
 
 export function Header() {
   const { walletModalOpen, openWalletModal, closeWalletModal } =

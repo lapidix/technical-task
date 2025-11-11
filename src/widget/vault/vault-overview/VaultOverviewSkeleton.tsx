@@ -1,5 +1,3 @@
-import { InformationIcon } from "@/shared/ui/icons/common";
-
 export const VaultOverviewSkeleton = () => {
   return (
     <div>
@@ -27,23 +25,8 @@ export const VaultOverviewSkeleton = () => {
         <div className="h-7 w-40 bg-white/10 rounded animate-pulse" />
       </div>
 
-      {/* My Stats Skeleton */}
-      <div className="bg-[#1C1D1C] rounded-2xl p-4 flex justify-between gap-8">
-        <div>
-          <div className="flex items-center mb-2">
-            <span className="text-gray-400 text-xs">My Total Supply</span>
-            <InformationIcon className="w-3 h-3" />
-          </div>
-          <div className="h-7 w-32 bg-white/10 rounded animate-pulse" />
-        </div>
-        <div>
-          <div className="flex items-center mb-2">
-            <span className="text-gray-400 text-xs">My Total APY</span>
-            <InformationIcon className="w-3 h-3" />
-          </div>
-          <div className="h-7 w-20 bg-white/10 rounded animate-pulse" />
-        </div>
-      </div>
+      {/* My Stats Skeleton - 큰 라운드 사각형 */}
+      <div className="h-24 bg-[#1C1D1C] rounded-2xl animate-pulse" />
     </div>
   );
 };

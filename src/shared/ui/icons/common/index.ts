@@ -7,6 +7,7 @@ export { EarnIcon } from "./EarnIcon";
 export { ErrorIcon } from "./ErrorIcon";
 export { InformationIcon } from "./InformationIcon";
 export { LeftArrowIcon } from "./LeftArrowIcon";
+export { LinkIcon } from "./LinkIcon";
 export { LogoIcon } from "./LogoIcon";
 export { MarketIcon } from "./MarketIcon";
 export { MenuIcon } from "./MenuIcon";

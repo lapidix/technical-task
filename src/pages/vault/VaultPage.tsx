@@ -3,8 +3,20 @@ import { SUPPORTED_VAULTS } from "@/entities/vault/constants";
 import { SupportedVaultId } from "@/entities/vault/types";
 import { ApiErrorFallback, ErrorBoundary } from "@/shared/ui/error-boundary";
 import { VaultHeader } from "@/widget/vault/header";
-import { VaultForm, VaultFormSkeleton } from "@/widget/vault/vault-from";
+import { VaultFormSkeleton } from "@/widget/vault/vault-from";
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
+
+const VaultForm = dynamic(
+  () =>
+    import("@/widget/vault/vault-from").then((mod) => ({
+      default: mod.VaultForm,
+    })),
+  {
+    loading: () => <VaultFormSkeleton />,
+    ssr: true,
+  }
+);
 
 const VaultHeaderSkeleton = () => {
   return (

@@ -8,7 +8,6 @@ export const useAllVaultData = () => {
     queryKey: VAULT_QUERY_KEYS.allVaultData,
     queryFn: () => VaultService.getAllVaultData(),
     staleTime: QUERY_STALE_TIME.MEDIUM,
-    refetchInterval: 60000,
     refetchOnWindowFocus: false,
   });
 

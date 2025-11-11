@@ -2,7 +2,12 @@
 
 import { useMainOverViewData } from "@/features/vault/hooks";
 import { formatCompactNumber } from "@/shared/libs";
-import { InformationIcon, RightArrowIcon } from "@/shared/ui/icons/common";
+import { useModalStore } from "@/shared/store";
+import {
+  InformationIcon,
+  LinkIcon,
+  RightArrowIcon,
+} from "@/shared/ui/icons/common";
 
 export const VaultOverviewContent = ({
   address,
@@ -11,6 +16,7 @@ export const VaultOverviewContent = ({
 }) => {
   const { totalSupply, myTotalSupply, myTotalAPY, myVaultsCount } =
     useMainOverViewData(address);
+  const { openWalletModal } = useModalStore();
 
   return (
     <div>
@@ -37,38 +43,58 @@ export const VaultOverviewContent = ({
         yield
       </p>
 
-      {/* View My Vaults */}
-      <button className="flex items-center gap-1 font-medium text-white text-lg mt-10 mb-4 hover:text-gray-300 transition-colors">
+      {/* View My Vaults - 항상 표시 */}
+      <div className="flex items-center gap-1 font-medium text-white text-lg mt-10 mb-4">
         <span className="self-end">View My Vaults</span>
-        <span className="text-[#8C938C]">({myVaultsCount})</span>
+        {address && <span className="text-[#8C938C]">({myVaultsCount})</span>}
         <RightArrowIcon className="w-5 h-5" />
-      </button>
+      </div>
 
       {/* My Stats */}
-      <div className="bg-[#1C1D1C] rounded-2xl p-4 flex justify-between gap-8">
-        <div>
-          <div className="flex items-center mb-2">
-            <span className="text-gray-400 text-xs">My Total Supply</span>
-            <InformationIcon className="w-3 h-3" />
+      {address ? (
+        // 지갑 연결되어 있을 때: 실제 데이터 표시
+        <div className="bg-[#1C1D1C] rounded-2xl p-4 flex justify-between gap-8">
+          <div>
+            <div className="flex items-center mb-2">
+              <span className="text-gray-400 text-xs">My Total Supply</span>
+              <InformationIcon className="w-3 h-3" />
+            </div>
+            <div
+              className="text-xl font-normal text-gray-50"
+              suppressHydrationWarning>
+              ${myTotalSupply.toLocaleString()}
+            </div>
           </div>
-          <div
-            className="text-xl font-normal text-gray-50"
-            suppressHydrationWarning>
-            ${myTotalSupply.toLocaleString()}
+          <div>
+            <div className="flex items-center mb-2">
+              <span className="text-gray-400 text-xs">My Total APY</span>
+              <InformationIcon className="w-3 h-3" />
+            </div>
+            <div
+              className="text-xl font-normal text-gray-50"
+              suppressHydrationWarning>
+              {myTotalAPY.toFixed(2)}%
+            </div>
           </div>
         </div>
-        <div>
-          <div className="flex items-center mb-2">
-            <span className="text-gray-400 text-xs">My Total APY</span>
-            <InformationIcon className="w-3 h-3" />
+      ) : (
+        // 지갑 연결 안 되어 있을 때: 클릭 가능한 버튼
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            openWalletModal();
+          }}
+          type="button"
+          className="w-full h-24 bg-[#1C1D1C] hover:bg-[#2A2D2A] rounded-2xl flex flex-col items-center justify-center gap-1 transition-colors cursor-pointer gap-y-2">
+          <div className="flex items-center justify-center gap-x-2 text-lg font-medium text-white">
+            <LinkIcon className="w-6 h-6" />
+            Connect Wallet
           </div>
-          <div
-            className="text-xl font-normal text-gray-50"
-            suppressHydrationWarning>
-            {myTotalAPY.toFixed(2)}%
-          </div>
-        </div>
-      </div>
+          <span className="text-sm text-gray-400">
+            View your vault stats and manage your assets
+          </span>
+        </button>
+      )}
     </div>
   );
 };
