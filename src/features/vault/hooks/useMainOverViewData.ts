@@ -1,4 +1,5 @@
 import { VAULT_QUERY_KEYS } from "@/entities/vault/constants";
+import { QUERY_STALE_TIME } from "@/shared/config";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import { VaultService } from "../services/vault.service";
 
@@ -13,9 +14,10 @@ export const useMainOverViewData = (address?: `0x${string}`) => {
       {
         queryKey: VAULT_QUERY_KEYS.allVaultTotalSupply,
         queryFn: VaultService.getAllVaultTotalSupply,
-        staleTime: 10000,
+        staleTime: QUERY_STALE_TIME.MEDIUM,
         refetchInterval: 60000,
         refetchOnWindowFocus: true,
+        retry: 3,
       },
       {
         queryKey: VAULT_QUERY_KEYS.myTotalSupply(address),
@@ -23,7 +25,7 @@ export const useMainOverViewData = (address?: `0x${string}`) => {
           if (!address) return 0;
           return VaultService.getMyTotalSupply(address);
         },
-        staleTime: 0, // Always refetch when stale
+        staleTime: QUERY_STALE_TIME.MEDIUM,
         refetchOnWindowFocus: true,
       },
       {

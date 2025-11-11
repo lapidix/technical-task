@@ -1,8 +1,10 @@
 "use client";
 
-import { ToastIcon } from "@/shared/ui/icons/toast";
 import { useEffect } from "react";
+import { tcm } from "../../libs";
 import { ToastType } from "../../types";
+import { CloseIcon } from "../icons/common";
+import { ToastIcon } from "../icons/toast";
 
 interface ToastProps {
   id: string;
@@ -11,7 +13,7 @@ interface ToastProps {
   onClose: (id: string) => void;
   duration?: number;
   action?: {
-    label: string;
+    label: string | React.ReactNode;
     onClick: () => void;
   };
 }
@@ -65,16 +67,27 @@ export const Toast = ({
 
   return (
     <div
-      className={`${styles.bg} ${styles.border} backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg px-4 py-3 w-full max-w-sm mb-2 animate-slide-in-right`}>
+      className={tcm(
+        styles.bg,
+        styles.border,
+        "backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg px-4 py-3 w-full max-w-sm mb-2 animate-slide-in-right"
+      )}>
       <div className="flex items-start gap-3">
         <div
-          className={`${styles.iconBg} ${styles.icon} flex-shrink-0 rounded-lg p-2`}>
+          className={tcm(
+            styles.iconBg,
+            styles.icon,
+            "flex-shrink-0 rounded-lg p-2"
+          )}>
           <ToastIcon icon={type} className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0 overflow-hidden flex flex-col">
           <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
             <p
-              className={`${styles.text} text-sm font-medium whitespace-pre-line leading-snug break-words`}>
+              className={tcm(
+                styles.text,
+                "text-sm font-medium whitespace-pre-line leading-snug break-words"
+              )}>
               {message}
             </p>
           </div>
@@ -91,20 +104,12 @@ export const Toast = ({
         </div>
         <button
           onClick={() => onClose(id)}
-          className={`${styles.text} opacity-50 hover:opacity-100 transition-opacity flex-shrink-0 -mt-0.5`}
+          className={tcm(
+            styles.text,
+            "opacity-50 hover:opacity-100 transition-opacity flex-shrink-0 -mt-0.5"
+          )}
           aria-label="Close">
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
+          <CloseIcon />
         </button>
       </div>
     </div>

@@ -2,45 +2,45 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useWalletConnection } from "./useWalletConnection";
 
+const REDIRECT_DELAY = 500; // ms
+const HOME_PATH = "/";
+
 export function useRequireWallet() {
   const router = useRouter();
   const { isConnected, isLoading, status, mounted } = useWalletConnection();
+
   const hasRedirected = useRef(false);
-  const renderCount = useRef(0);
   const hasSeenConnected = useRef(false);
 
-  renderCount.current++;
-
   useEffect(() => {
+    // Track if user was ever connected
     if (isConnected || status === "connected") {
       hasSeenConnected.current = true;
     }
 
+    // Early returns for various states
     if (hasRedirected.current) return;
-
     if (!mounted || isLoading) return;
-
     if (status === "connecting" || status === "reconnecting") return;
 
-    if (
-      status === "disconnected" &&
-      !isConnected &&
-      !hasSeenConnected.current
-    ) {
+    const isDisconnected = status === "disconnected" && !isConnected;
+    if (!isDisconnected) return;
+
+    // Case 1: Never connected - wait before redirecting (might be reconnecting)
+    if (!hasSeenConnected.current) {
       const timeoutId = setTimeout(() => {
         if (!hasSeenConnected.current && !hasRedirected.current) {
           hasRedirected.current = true;
-          router.push("/");
+          router.push(HOME_PATH);
         }
-      }, 500);
+      }, REDIRECT_DELAY);
 
       return () => clearTimeout(timeoutId);
     }
 
-    if (status === "disconnected" && !isConnected && hasSeenConnected.current) {
-      hasRedirected.current = true;
-      router.push("/");
-    }
+    // Case 2: Was connected but now disconnected - redirect immediately
+    hasRedirected.current = true;
+    router.push(HOME_PATH);
   }, [mounted, isLoading, isConnected, status, router]);
 
   return { isConnected, isLoading };

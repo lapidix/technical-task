@@ -3,7 +3,6 @@
 import { ConnectButton } from "@/entities/wallet/ui";
 import { ConnectedWalletButton } from "@/entities/wallet/ui/connected-wallet-button";
 import { useWalletConnection } from "@/shared/hooks";
-import { ButtonSkeleton } from "@/shared/ui/skeleton";
 
 interface WalletConnectionButtonProps {
   onOpenModal: () => void;
@@ -16,7 +15,7 @@ export function WalletConnectionButton({
 
   // Show skeleton while checking wallet connection
   if (isLoading) {
-    return <ButtonSkeleton />;
+    return <div className={"w-32 h-8 rounded-lg bg-white/10 animate-pulse"} />;
   }
 
   if (!isConnected) {

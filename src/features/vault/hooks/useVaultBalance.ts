@@ -1,4 +1,5 @@
 import { VAULT_QUERY_KEYS } from "@/entities/vault/constants";
+import { QUERY_STALE_TIME } from "@/shared/config";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { VaultService } from "../services";
 
@@ -13,6 +14,8 @@ export const useVaultBalance = (
       if (!address) return 0;
       return VaultService.getUserVaultBalance(vaultAddress, address, decimals);
     },
+    staleTime: QUERY_STALE_TIME.MEDIUM,
+    retry: 3,
   });
 
   return {

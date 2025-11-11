@@ -1,5 +1,6 @@
 "use client";
 
+import { ENV } from "@/shared/config/env.config";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   backpackWallet,
@@ -9,9 +10,6 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { createConfig, http } from "wagmi";
 import { baseSepolia } from "wagmi/chains";
-
-const projectId =
-  process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID";
 
 // * Custom wallet list including Backpack
 const connectors = connectorsForWallets(
@@ -27,8 +25,8 @@ const connectors = connectorsForWallets(
     },
   ],
   {
-    appName: "Technical Task",
-    projectId,
+    appName: ENV.NEXT_PUBLIC_WALLETCONNECT_APP_NAME,
+    projectId: ENV.WALLETCONNECT_PROJECT_ID,
   }
 );
 

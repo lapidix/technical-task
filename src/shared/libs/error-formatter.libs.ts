@@ -4,6 +4,7 @@ interface TransactionError {
   cause?: { reason?: string };
 }
 
+// * Parse transaction error (e.g. User rejected, Insufficient balance, etc.)
 const parseTransactionError = (error: unknown): string => {
   const errorObj = error as TransactionError;
 
@@ -15,6 +16,7 @@ const parseTransactionError = (error: unknown): string => {
   );
 };
 
+// * Get user-friendly error message (e.g. User rejected, Insufficient balance, etc.)
 const getUserFriendlyError = (
   rawReason: string,
   hasHash: boolean = false
@@ -50,6 +52,7 @@ const getUserFriendlyError = (
   return rawReason;
 };
 
+// * Format receipt reverted message (e.g. Transaction Reverted: Insufficient vault balance)
 export const formatReceiptRevertedMessage = (
   hash: `0x${string}`,
   revertReason: string,
@@ -80,6 +83,7 @@ export const formatReceiptRevertedMessage = (
   return message;
 };
 
+// * Format transaction error message (e.g. Transaction Reverted: Insufficient vault balance)
 export const formatTransactionErrorMessage = (
   error: unknown,
   hash?: `0x${string}`
@@ -88,7 +92,6 @@ export const formatTransactionErrorMessage = (
   const userFriendlyReason = getUserFriendlyError(rawReason, !!hash);
 
   if (hash) {
-    // Transaction was sent but execution failed
     return (
       "❌ Transaction Failed\n\n" +
       `${userFriendlyReason}\n\n` +
@@ -96,7 +99,6 @@ export const formatTransactionErrorMessage = (
       `📝 Technical Details:\n${rawReason}`
     );
   } else {
-    // Transaction was rejected before sending
     return (
       "⚠️ Transaction Rejected\n\n" +
       `${userFriendlyReason}` +

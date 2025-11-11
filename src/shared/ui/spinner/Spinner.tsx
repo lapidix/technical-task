@@ -1,22 +1,22 @@
 import { tcm } from "@/shared/libs";
 
 interface SpinnerProps {
-  size?: "sm" | "md" | "lg";
+  size?: "SM" | "MD" | "LG";
   className?: string;
 }
 
-const sizeClasses = {
-  sm: "w-4 h-4 border-2",
-  md: "w-8 h-8 border-4",
-  lg: "w-12 h-12 border-4",
+const SIZE_STYLE = {
+  SM: "w-4 h-4 border-2",
+  MD: "w-8 h-8 border-4",
+  LG: "w-12 h-12 border-4",
 };
 
-export function Spinner({ size = "md", className }: SpinnerProps) {
+export function Spinner({ size = "MD", className }: SpinnerProps) {
   return (
     <div
       className={tcm(
         "rounded-full border-gray-700 border-t-gray-400 animate-spin",
-        sizeClasses[size],
+        SIZE_STYLE[size],
         className
       )}
       role="status"

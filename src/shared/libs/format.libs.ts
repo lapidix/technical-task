@@ -1,3 +1,4 @@
+// * Formatter for amounts (e.g. 1,000,000 -> 1,000,000.00)
 export const formatAmount = (
   amount: string,
   options?: Intl.NumberFormatOptions
@@ -15,6 +16,7 @@ export const formatAmount = (
   return parseFloat(amount).toLocaleString("en-US", defaultOptions);
 };
 
+// * Formatter for compact numbers (e.g. 1,000,000,000 -> 1B, 1,000,000 -> 1M, 1,000 -> 1K)
 export const formatCompactNumber = (value: number): string => {
   if (value === 0) return "0";
 

@@ -1,4 +1,5 @@
 import { ERC20_QUERY_KEYS } from "@/entities/erc20/constants";
+import { QUERY_STALE_TIME } from "@/shared/config";
 import { useWalletConnection } from "@/shared/hooks";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ERC20Service } from "../services";
@@ -17,6 +18,8 @@ export const useTokenBalance = (
       }
       return ERC20Service.getBalance(tokenAddress, address, decimals);
     },
+    staleTime: QUERY_STALE_TIME.MEDIUM,
+    retry: 3,
   });
 
   return {
