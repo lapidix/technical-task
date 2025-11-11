@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { tcm } from "../../libs";
+import { ToastAction } from "../../store/toast.store";
 import { ToastType } from "../../types";
 import { CloseIcon } from "../icons/common";
 import { ToastIcon } from "../icons/toast";
@@ -12,10 +13,7 @@ interface ToastProps {
   type: ToastType;
   onClose: (id: string) => void;
   duration?: number;
-  action?: {
-    label: string | React.ReactNode;
-    onClick: () => void;
-  };
+  action?: ToastAction;
 }
 
 export const Toast = ({
@@ -108,7 +106,8 @@ export const Toast = ({
                   action.onClick();
                   handleClose();
                 }}
-                className="px-6 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 text-sm font-semibold rounded-md border border-blue-500/30 transition-all duration-200 hover:border-blue-500/50 active:scale-95">
+                className="px-6 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 text-sm font-semibold rounded-md border border-blue-500/30 transition-all duration-200 hover:border-blue-500/50 active:scale-95 flex items-center gap-1.5">
+                {action.icon && <action.icon className="w-3.5 h-3.5" />}
                 {action.label}
               </button>
             </div>

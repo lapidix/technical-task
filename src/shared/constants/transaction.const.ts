@@ -1,0 +1,6 @@
+export const TX_CONFIG = {
+  CONFIRMATIONS: 1,
+  POLLING_INTERVAL: 1000,
+  TIMEOUT: 60_000,
+  RETRY_DELAY: 100,
+} as const;

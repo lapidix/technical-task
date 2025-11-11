@@ -15,7 +15,7 @@ import {
   TransactionStatus,
 } from "./components";
 
-export const FaucetRequestForm = () => {
+export const FaucetRequestSection = () => {
   const queryClient = useQueryClient();
   const { address } = useWalletConnection();
   const [selectedToken, setSelectedToken] = useState(SUPPORTED_VAULTS[0]);

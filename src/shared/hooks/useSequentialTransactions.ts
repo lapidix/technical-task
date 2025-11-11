@@ -1,3 +1,4 @@
+import { TX_CONFIG } from "@/shared/constants";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useWaitForTransactionReceipt } from "wagmi";
 
@@ -7,13 +8,6 @@ interface useSequentialTransactionsOptions {
   onSuccess?: () => void;
   onError?: (error: Error) => void;
 }
-
-const TX_CONFIG = {
-  CONFIRMATIONS: 1,
-  POLLING_INTERVAL: 1000,
-  TIMEOUT: 60_000,
-  RETRY_DELAY: 100,
-} as const;
 
 export const useSequentialTransactions = (
   options?: useSequentialTransactionsOptions
@@ -84,10 +78,8 @@ export const useSequentialTransactions = (
 
   const execute = async (transactionSteps: TransactionStep[]) => {
     if (isExecuting) {
-      resetState();
-      await new Promise((resolve) =>
-        setTimeout(resolve, TX_CONFIG.RETRY_DELAY)
-      );
+      console.warn("Transaction already in progress");
+      return;
     }
 
     setIsExecuting(true);

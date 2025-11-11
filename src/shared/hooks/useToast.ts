@@ -6,9 +6,11 @@ export const useToast = () => {
 };
 
 export const createToastAction = (
-  label: string | React.ReactNode,
-  onClick: () => void
+  label: string,
+  onClick: () => void,
+  icon?: React.ComponentType<{ className?: string }>
 ) => ({
   label,
   onClick,
+  icon,
 });

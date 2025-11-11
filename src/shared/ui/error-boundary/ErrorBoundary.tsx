@@ -38,12 +38,8 @@ export class ErrorBoundary extends Component<Props, State> {
         showToast(errorConfig.message, "ERROR", {
           duration: 5000,
           action: {
-            label: (
-              <span className="flex items-center gap-1.5">
-                <RefreshIcon className="w-3.5 h-3.5" />
-                {errorConfig.action}
-              </span>
-            ),
+            label: errorConfig.action,
+            icon: RefreshIcon,
             onClick: this.reset,
           },
         });

@@ -29,7 +29,6 @@ const MainPageContentSkeleton = () => {
 const MainPageContent = () => {
   const { mounted } = useWalletConnection();
 
-  // hydration 완료 전에는 스켈레톤
   if (!mounted) {
     return <MainPageContentSkeleton />;
   }

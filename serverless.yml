@@ -15,7 +15,7 @@ plugins:
 
 custom:
   customDomain:
-    domainName: ${env:CUSTOM_DOMAIN, 'task.lapidix.dev'}
+    domainName: ${env:CUSTOM_DOMAIN}
     basePath: ""
     stage: ${self:provider.stage}
     certificateArn: ${env:ACM_CERTIFICATE_ARN}

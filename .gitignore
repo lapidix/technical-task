@@ -48,3 +48,8 @@ next-env.d.ts
 
 # aws
 .aws-sam/
+
+# vscode
+.vscode/
+
+*.md

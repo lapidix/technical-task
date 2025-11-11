@@ -3,17 +3,17 @@ import { SUPPORTED_VAULTS } from "@/entities/vault/constants";
 import { SupportedVaultId } from "@/entities/vault/types";
 import { ApiErrorFallback, ErrorBoundary } from "@/shared/ui/error-boundary";
 import { VaultHeader } from "@/widget/vault/header";
-import { VaultFormSkeleton } from "@/widget/vault/vault-from";
+import { VaultContainerSkeleton } from "@/widget/vault/vault-container";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
-const VaultForm = dynamic(
+const VaultContainer = dynamic(
   () =>
-    import("@/widget/vault/vault-from").then((mod) => ({
-      default: mod.VaultForm,
+    import("@/widget/vault/vault-container").then((mod) => ({
+      default: mod.VaultContainer,
     })),
   {
-    loading: () => <VaultFormSkeleton />,
+    loading: () => <VaultContainerSkeleton />,
     ssr: true,
   }
 );
@@ -32,7 +32,7 @@ const VaultPageContentSkeleton = () => {
     <>
       <VaultHeaderSkeleton />
       <main className="flex-1 flex flex-col w-full">
-        <VaultFormSkeleton />
+        <VaultContainerSkeleton />
       </main>
     </>
   );
@@ -45,7 +45,7 @@ const VaultPageContent = ({ token }: { token: SupportedVaultId }) => {
     <>
       <VaultHeader currentVaultId={token} />
       <main className="flex-1 flex flex-col w-full">
-        {vault && <VaultForm vault={vault} />}
+        {vault && <VaultContainer vault={vault} />}
       </main>
     </>
   );

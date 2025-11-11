@@ -1,23 +1,23 @@
 import { ToastType } from "@/shared/types";
 import { create } from "zustand";
 
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
+  icon?: React.ComponentType<{ className?: string }>;
+}
+
 export interface ToastMessage {
   id: string;
   message: string;
   type: ToastType;
   duration?: number;
-  action?: {
-    label: string | React.ReactNode;
-    onClick: () => void;
-  };
+  action?: ToastAction;
 }
 
 interface ToastOptions {
   duration?: number;
-  action?: {
-    label: string | React.ReactNode;
-    onClick: () => void;
-  };
+  action?: ToastAction;
 }
 
 interface ToastStore {
@@ -37,7 +37,7 @@ export const useToastStore = create<ToastStore>((set) => ({
   toasts: [],
 
   showToast: (message, type = "INFO", options) => {
-    const id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+    const id = `${Date.now()}-${crypto.randomUUID()}`;
 
     const newToast: ToastMessage = {
       id,

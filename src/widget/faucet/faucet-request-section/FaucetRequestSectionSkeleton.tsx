@@ -6,7 +6,7 @@ import {
   TokenInformationSkeleton,
   TokenSelectorSkeleton,
 } from "./components";
-export const FaucetRequestFormSkeleton = () => {
+export const FaucetRequestSectionSkeleton = () => {
   return (
     <div className="bg-black rounded-xl py-2 space-y-2">
       <BalanceDisplaySkeleton />

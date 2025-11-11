@@ -1,7 +1,7 @@
 import { VAULT_QUERY_KEYS } from "@/entities/vault/constants";
 import { QUERY_STALE_TIME } from "@/shared/config";
 import { useSuspenseQueries } from "@tanstack/react-query";
-import { VaultService } from "../services/vault.service";
+import { VaultAggregateService } from "../services";
 
 export const useMainOverViewData = (address?: `0x${string}`) => {
   const [
@@ -13,7 +13,7 @@ export const useMainOverViewData = (address?: `0x${string}`) => {
     queries: [
       {
         queryKey: VAULT_QUERY_KEYS.allVaultTotalSupply,
-        queryFn: VaultService.getAllVaultTotalSupply,
+        queryFn: VaultAggregateService.getAllVaultTotalSupply,
         staleTime: QUERY_STALE_TIME.MEDIUM,
         refetchOnWindowFocus: false,
       },
@@ -21,7 +21,7 @@ export const useMainOverViewData = (address?: `0x${string}`) => {
         queryKey: VAULT_QUERY_KEYS.myTotalSupply(address),
         queryFn: () => {
           if (!address) return 0;
-          return VaultService.getMyTotalSupply(address);
+          return VaultAggregateService.getMyTotalSupply(address);
         },
         refetchOnWindowFocus: false,
       },
@@ -29,7 +29,7 @@ export const useMainOverViewData = (address?: `0x${string}`) => {
         queryKey: VAULT_QUERY_KEYS.myTotalAPY(address),
         queryFn: () => {
           if (!address) return 0;
-          return VaultService.getMyTotalAPY(address);
+          return VaultAggregateService.getMyTotalAPY(address);
         },
         refetchOnWindowFocus: false,
       },
@@ -37,7 +37,7 @@ export const useMainOverViewData = (address?: `0x${string}`) => {
         queryKey: VAULT_QUERY_KEYS.myVaultsCount(address),
         queryFn: () => {
           if (!address) return 0;
-          return VaultService.getMyVaultsCount(address);
+          return VaultAggregateService.getMyVaultsCount(address);
         },
         refetchOnWindowFocus: false,
       },

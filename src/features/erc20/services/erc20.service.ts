@@ -11,14 +11,23 @@ export class ERC20Service {
     ownerAddress: `0x${string}`,
     decimals: number
   ): Promise<number> {
-    const balance = await readContract(wagmiConfig, {
-      address: tokenAddress,
-      abi: ERC20_ABI,
-      functionName: "balanceOf",
-      args: [ownerAddress],
-    });
-    const balanceString = formatUnits(balance, decimals);
-    return Number(balanceString);
+    try {
+      const balance = await readContract(wagmiConfig, {
+        address: tokenAddress,
+        abi: ERC20_ABI,
+        functionName: "balanceOf",
+        args: [ownerAddress],
+      });
+      const balanceString = formatUnits(balance, decimals);
+      return Number(balanceString);
+    } catch (error) {
+      console.error(`Failed to get balance for ${tokenAddress}:`, error);
+      throw new Error(
+        `Failed to fetch token balance: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
   }
 
   static async getTokenPrice(coinGeckoId: string): Promise<number> {
@@ -27,10 +36,19 @@ export class ERC20Service {
         coinGeckoId
       );
 
-      return response[coinGeckoId]?.usd || 0;
+      const price = response[coinGeckoId]?.usd;
+      if (price === undefined) {
+        console.warn(`Price not found for ${coinGeckoId}, returning 0`);
+        return 0;
+      }
+      return price;
     } catch (error) {
-      console.error(`Error fetching token price for ${coinGeckoId}:`, error);
-      throw error;
+      console.error(`Failed to fetch token price for ${coinGeckoId}:`, error);
+      throw new Error(
+        `Failed to fetch ${coinGeckoId} price: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
@@ -52,8 +70,12 @@ export class ERC20Service {
 
       return hash;
     } catch (error) {
-      console.error("Error approving token:", error);
-      throw error;
+      console.error(`Failed to approve ${amount} tokens:`, error);
+      throw new Error(
+        `Token approval failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
@@ -66,13 +88,24 @@ export class ERC20Service {
 
       const prices: Record<string, number> = {};
       coinGeckoIds.forEach((id) => {
-        prices[id] = data[id]?.usd || 0;
+        const price = data[id]?.usd;
+        if (price === undefined) {
+          console.warn(`Price not found for ${id}, using 0`);
+        }
+        prices[id] = price || 0;
       });
 
       return prices;
     } catch (error) {
-      console.error("Error fetching token prices:", error);
-      throw error;
+      console.error(
+        `Failed to fetch prices for [${coinGeckoIds.join(", ")}]:`,
+        error
+      );
+      throw new Error(
+        `Failed to fetch multiple token prices: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 }

@@ -5,29 +5,35 @@ interface VaultInformationProps {
   vault: VaultBase;
   vaultBalance: number;
   tokenPrice: number;
+  isSupply: boolean;
 }
 
 export const VaultInformation = ({
   vault,
   vaultBalance,
   tokenPrice,
+  isSupply,
 }: VaultInformationProps) => {
   return (
-    <div className="px-6 py-4">
+    <div>
       <div className="flex items-center gap-3 mb-2">
-        <span className="text-gray-400">To</span>
-        <NetworkIcon icon={vault.icon} className="w-6 h-6" />
-        <span className="text-lg font-semibold">{vault.symbol} Multiply</span>
+        <span className="text-[#C2C8C2] text-xl font-medium">
+          {isSupply ? "To" : "From"}
+        </span>
+        <div className="flex items-center gap-x-1">
+          <NetworkIcon icon={vault.icon} className="w-5 h-5" />
+          <span className="text-xl font-medium">{vault.symbol} Multiply</span>
+        </div>
       </div>
-      <div className="text-gray-400 text-sm">
+      <div className="text-[#8C938C] font-medium text-sm">
         My Supplied:{" "}
-        <span className="text-white font-medium" suppressHydrationWarning>
+        <span className="text-[#DFE2DF] font-medium" suppressHydrationWarning>
           $
           {(vaultBalance * tokenPrice).toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}{" "}
-          <span className="text-gray-500">
+          <span className="text-gray-500" suppressHydrationWarning>
             {vaultBalance.toLocaleString("en-US", {
               minimumFractionDigits: 0,
               maximumFractionDigits: 2,

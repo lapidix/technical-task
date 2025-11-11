@@ -1,20 +1,18 @@
 import { create } from "zustand";
 
-// NumberPad 높이 상수
 export const NUMBER_PAD_HEIGHT = 220;
 
-type TargetForm = "supply" | "withdraw" | null;
+type TargetSection = "deposit" | "withdraw" | null;
 
 interface NumberPadStore {
-  // State
   isOpen: boolean;
   amount: string;
   maxAmount: number;
-  targetForm: TargetForm;
+  targetForm: TargetSection;
   disabled: boolean;
 
   // Actions
-  open: (targetForm: TargetForm, maxAmount: number) => void;
+  open: (targetForm: TargetSection, maxAmount: number) => void;
   close: () => void;
   setAmount: (amount: string) => void;
   addDigit: (digit: string) => void;

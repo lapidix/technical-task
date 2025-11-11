@@ -52,7 +52,6 @@ export const VaultOverviewContent = ({
 
       {/* My Stats */}
       {address ? (
-        // 지갑 연결되어 있을 때: 실제 데이터 표시
         <div className="bg-[#1C1D1C] rounded-2xl p-4 flex justify-between gap-8">
           <div>
             <div className="flex items-center mb-2">
@@ -62,7 +61,7 @@ export const VaultOverviewContent = ({
             <div
               className="text-xl font-normal text-gray-50"
               suppressHydrationWarning>
-              ${myTotalSupply.toLocaleString()}
+              ${formatCompactNumber(myTotalSupply)}
             </div>
           </div>
           <div>
@@ -78,7 +77,6 @@ export const VaultOverviewContent = ({
           </div>
         </div>
       ) : (
-        // 지갑 연결 안 되어 있을 때: 클릭 가능한 버튼
         <button
           onClick={(e) => {
             e.preventDefault();
