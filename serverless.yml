@@ -9,21 +9,17 @@ provider:
   timeout: 30
   environment:
     NODE_ENV: production
-
-plugins:
-  - serverless-domain-manager
+    BUCKET_NAME: ${self:custom.assetsBucketName}
+    BUCKET_KEY_PREFIX: _assets
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+          Resource: "arn:aws:s3:::${self:custom.assetsBucketName}/*"
 
 custom:
-  customDomain:
-    domainName: ${env:CUSTOM_DOMAIN}
-    basePath: ""
-    stage: ${self:provider.stage}
-    certificateArn: ${env:ACM_CERTIFICATE_ARN}
-    createRoute53Record: false
-    endpointType: "regional"
-    securityPolicy: tls_1_2
-    apiType: http
-
   assetsBucketName: ${self:service}-assets-${self:provider.stage}
 
 functions:
@@ -31,10 +27,10 @@ functions:
     handler: .open-next/server-functions/default/index.handler
     events:
       - httpApi: "*"
-    url: true # Lambda Function URL 활성화
 
   imageOptimization:
     handler: .open-next/image-optimization-function/index.handler
+    memorySize: 1536
     events:
       - httpApi:
           path: /_next/image
@@ -42,21 +38,28 @@ functions:
 
 resources:
   Resources:
-    # S3 버킷 - 정적 파일용
+    # S3 버킷 - 정적 파일용 (Private)
     AssetsBucket:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.assetsBucketName}
         PublicAccessBlockConfiguration:
-          BlockPublicAcls: false
-          BlockPublicPolicy: false
-          IgnorePublicAcls: false
-          RestrictPublicBuckets: false
-        WebsiteConfiguration:
-          IndexDocument: index.html
-          ErrorDocument: 404.html
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
 
-    # S3 버킷 정책 - 퍼블릭 읽기 허용
+    # CloudFront Origin Access Control
+    CloudFrontOriginAccessControl:
+      Type: AWS::CloudFront::OriginAccessControl
+      Properties:
+        OriginAccessControlConfig:
+          Name: ${self:service}-oac-${self:provider.stage}
+          OriginAccessControlOriginType: s3
+          SigningBehavior: always
+          SigningProtocol: sigv4
+
+    # S3 버킷 정책 - CloudFront OAC에서만 접근 허용
     AssetsBucketPolicy:
       Type: AWS::S3::BucketPolicy
       Properties:
@@ -64,9 +67,160 @@ resources:
         PolicyDocument:
           Statement:
             - Effect: Allow
-              Principal: "*"
+              Principal:
+                Service: cloudfront.amazonaws.com
               Action: "s3:GetObject"
               Resource: !Sub "${AssetsBucket.Arn}/*"
+              Condition:
+                StringEquals:
+                  AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+
+    # CloudFront Distribution
+    CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Enabled: true
+          Comment: "NextJS App Distribution"
+          HttpVersion: http2and3
+          PriceClass: PriceClass_200
+          Aliases:
+            - ${env:CUSTOM_DOMAIN}
+          ViewerCertificate:
+            AcmCertificateArn: ${env:ACM_CERTIFICATE_ARN}
+            SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1.2_2021
+          DefaultCacheBehavior:
+            TargetOriginId: api-gateway
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+            CachedMethods:
+              - GET
+              - HEAD
+            ForwardedValues:
+              QueryString: true
+              Headers:
+                - Authorization
+                - Accept
+                - Accept-Language
+                - CloudFront-Forwarded-Proto
+                - Host
+                - x-forwarded-host
+              Cookies:
+                Forward: whitelist
+                WhitelistedNames:
+                  - __Secure-next-auth.session-token
+                  - next-auth.session-token
+            MinTTL: 0
+            DefaultTTL: 0
+            MaxTTL: 0
+            Compress: true
+          CacheBehaviors:
+            # 정적 파일 캐싱 (_next/static/*) - 빌드 해시 포함, 영구 캐싱
+            - PathPattern: "/_next/static/*"
+              TargetOriginId: s3-assets
+              ViewerProtocolPolicy: redirect-to-https
+              AllowedMethods:
+                - GET
+                - HEAD
+              CachedMethods:
+                - GET
+                - HEAD
+              ForwardedValues:
+                QueryString: false
+                Cookies:
+                  Forward: none
+              MinTTL: 31536000
+              DefaultTTL: 31536000
+              MaxTTL: 31536000
+              Compress: true
+            # _next/data/* - SSG/ISR 데이터
+            - PathPattern: "/_next/data/*"
+              TargetOriginId: api-gateway
+              ViewerProtocolPolicy: redirect-to-https
+              AllowedMethods:
+                - GET
+                - HEAD
+              CachedMethods:
+                - GET
+                - HEAD
+              ForwardedValues:
+                QueryString: true
+                Cookies:
+                  Forward: none
+              MinTTL: 0
+              DefaultTTL: 0
+              MaxTTL: 31536000
+              Compress: true
+            # 이미지 최적화
+            - PathPattern: "/_next/image*"
+              TargetOriginId: api-gateway
+              ViewerProtocolPolicy: redirect-to-https
+              AllowedMethods:
+                - GET
+                - HEAD
+              CachedMethods:
+                - GET
+                - HEAD
+              ForwardedValues:
+                QueryString: true
+                Headers:
+                  - Accept
+              MinTTL: 60
+              DefaultTTL: 86400
+              MaxTTL: 31536000
+              Compress: true
+            # 파비콘 및 정적 에셋
+            - PathPattern: "/favicon.ico"
+              TargetOriginId: s3-assets
+              ViewerProtocolPolicy: redirect-to-https
+              AllowedMethods:
+                - GET
+                - HEAD
+              CachedMethods:
+                - GET
+                - HEAD
+              ForwardedValues:
+                QueryString: false
+                Cookies:
+                  Forward: none
+              MinTTL: 86400
+              DefaultTTL: 604800
+              MaxTTL: 31536000
+              Compress: true
+          Origins:
+            # API Gateway Origin
+            - Id: api-gateway
+              DomainName: !Sub "${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+              CustomOriginConfig:
+                HTTPSPort: 443
+                OriginProtocolPolicy: https-only
+                OriginSSLProtocols:
+                  - TLSv1.2
+              OriginShield:
+                Enabled: true
+                OriginShieldRegion: ${self:provider.region}
+            # S3 Origin (OAC 사용)
+            - Id: s3-assets
+              DomainName: !GetAtt AssetsBucket.RegionalDomainName
+              S3OriginConfig:
+                OriginAccessIdentity: ""
+              OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
+
+  Outputs:
+    CloudFrontDistributionId:
+      Value: !Ref CloudFrontDistribution
+      Description: CloudFront Distribution ID
+    CloudFrontDomainName:
+      Value: !GetAtt CloudFrontDistribution.DomainName
+      Description: CloudFront Domain Name
 
 package:
   patterns:
